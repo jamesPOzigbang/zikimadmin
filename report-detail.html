@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지킴진단 관리자 - 리포트 세부내용</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <img src="logo.png" class="logo-icon" alt="Logo">
+                <span class="logo-text">지킴진단 Admin</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item active">
+                    <span class="icon">📄</span>
+                    리포트 발급 이력
+                </a>
+                <a href="content-management-standalone.html" class="nav-item">
+                    <span class="icon">⚙️</span>
+                    컨텐츠 관리
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="breadcrumbs">
+                    <a href="index.html">홈</a> / <a href="index.html">리포트 발급 이력</a> / <span class="current">리포트
+                        세부내용</span>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar">A</div>
+                    <span class="username">관리자님</span>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <div>
+                        <h1>리포트 세부내용</h1>
+                        <p class="subtitle" id="reportIdHeader">리포트 ID: Loading...</p>
+                    </div>
+                    <button class="btn btn-outline" onclick="location.href='index.html'">목록으로 돌아가기</button>
+                </div>
+
+                <!-- Report Details Container -->
+                <div class="card" style="padding: 32px; max-width: 100%;">
+                    <div id="reportDetailContent">
+                        <!-- Content injected by JS -->
+                        <p style="color: var(--text-muted);">데이터를 불러오는 중입니다...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

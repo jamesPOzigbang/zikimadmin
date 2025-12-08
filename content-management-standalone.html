@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지킴진단 관리자 - 컨텐츠 관리</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Colors */
+            --primary-color: #009720;
+            /* Green */
+            --primary-light: #009720;
+            --accent-color: #009720;
+            /* Bright Green */
+            --bg-color: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --border-color: #E2E8F0;
+
+            /* Status Colors */
+            --status-success-bg: #DCFCE7;
+            --status-success-text: #166534;
+            --status-fail-bg: #FEE2E2;
+            --status-fail-text: #991B1B;
+            --status-error-bg: #FEF3C7;
+            --status-error-text: #92400E;
+            --status-refund-bg: #F1F5F9;
+            --status-refund-text: #475569;
+
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo-area {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            padding: 0 var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            /* background: var(--primary-color); Removed for image logo */
+            border-radius: 6px;
+            margin-right: 12px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        .nav-menu {
+            padding: var(--spacing-lg) var(--spacing-md);
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-item .icon {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-header {
+            height: 64px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--spacing-xl);
+        }
+
+        .breadcrumbs {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .breadcrumbs .current {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary-light);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .username {
+            font-weight: 500;
+        }
+
+        .content-wrapper {
+            padding: var(--spacing-xl);
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-header {
+            margin-bottom: var(--spacing-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .page-header .subtitle {
+            color: var(--text-secondary);
+        }
+
+        /* Card & Table */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .table-actions {
+            padding: var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-box input {
+            padding: 10px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            width: 300px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .date-range-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 16px;
+            margin-right: auto;
+            /* Push actions to the right */
+        }
+
+        .date-input {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .date-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .date-separator {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .btn-outline {
+            background: white;
+            border-color: var(--border-color);
+            color: var(--text-primary);
+            margin-right: 8px;
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-color);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .data-table th {
+            background: var(--bg-color);
+            padding: 16px 24px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .data-table tr:hover {
+            background-color: #F8FAFC;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background-color: var(--status-success-bg);
+            color: var(--status-success-text);
+        }
+
+        .status-fail {
+            background-color: var(--status-fail-bg);
+            color: var(--status-fail-text);
+        }
+
+        .status-error {
+            background-color: var(--status-error-bg);
+            color: var(--status-error-text);
+        }
+
+        .status-refund {
+            background-color: var(--status-refund-bg);
+            color: var(--status-refund-text);
+        }
+
+        .purpose-tag {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .payment-method {
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        /* Pagination */
+        .pagination-area {
+            padding: var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .page-info {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .pagination-controls button {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 6px;
+            margin-left: 4px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .pagination-controls button:hover:not(:disabled) {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .pagination-controls button.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            width: 600px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 16px;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .detail-label {
+            width: 120px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            width: 100%;
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 9999px;
+            /* Pill shape */
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background: #F1F5F9;
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Checklist Grid */
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .checklist-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .checklist-item:hover {
+            border-color: var(--accent-color);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .checklist-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .checklist-label::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 14px;
+            background: var(--accent-color);
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+
+        .checklist-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+            background: #F8FAFC;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.6;
+            color: var(--text-primary);
+            min-height: 80px;
+        }
+
+        .checklist-input:focus {
+            background: white;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Status Tabs in Checklist Item */
+        .status-tabs-wrapper {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 12px;
+            background: #F1F5F9;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .status-tab {
+            flex: 1;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .status-tab.active {
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .status-tab.safe.active {
+            color: var(--status-success-text);
+            background: white;
+            border: 1px solid var(--status-success-bg);
+        }
+
+        .status-tab.caution.active {
+            color: var(--status-error-text);
+            background: white;
+            border: 1px solid var(--status-error-bg);
+        }
+
+
+
+        .status-input-area {
+            display: none;
+        }
+
+        .status-input-area.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .status-content-area {
+            display: none;
+        }
+
+        .status-content-area.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Dynamic Input List */
+        .input-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .input-wrapper-dynamic {
+            position: relative;
+            animation: fadeIn 0.3s ease;
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .input-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .title-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            resize: none;
+            font-family: inherit;
+            line-height: 1.5;
+            height: 54px;
+            /* Approx 2 lines + padding */
+        }
+
+        .title-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .checklist-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+            background: white;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.6;
+            color: var(--text-primary);
+            min-height: 80px;
+        }
+
+        .checklist-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .btn-add-field {
+            width: 100%;
+            padding: 10px;
+            background: white;
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-add-field:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background: #F8FAFC;
+        }
+
+        .btn-remove-field {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 12px;
+            color: var(--status-fail-text);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-remove-field:hover {
+            background: var(--status-fail-bg);
+            border-color: var(--status-fail-bg);
+        }
+
+        /* Content Management Form */
+        .content-card {
+            padding: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--primary-color);
+            font-size: 15px;
+        }
+
+        .form-hint {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-textarea:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* Radio Group for Checklist */
+        .radio-group-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            padding: 8px 0;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        .radio-buttons-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .land-type-dropdown {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            background: white;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .land-type-dropdown:hover {
+            border-color: var(--accent-color);
+        }
+
+        .land-type-dropdown:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            user-select: none;
+            transition: all 0.2s;
+        }
+
+        .radio-label:hover {
+            color: var(--primary-color);
+        }
+
+        .radio-label input[type="radio"] {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            margin: 0;
+            position: relative;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .radio-label input[type="radio"]:hover {
+            border-color: var(--text-secondary);
+        }
+
+        .radio-label input[type="radio"]:checked {
+            border-color: var(--accent-color);
+            background-color: white;
+        }
+
+        .radio-label input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            animation: radioPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .radio-label input[type="radio"]:not(:checked)::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        @keyframes radioPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .radio-label input[type="radio"]:checked+span {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .content-input-area {
+            display: none;
+        }
+
+        .content-input-area.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Checklist Header with Update Date */
+        .checklist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .update-date {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            background: #F1F5F9;
+            padding: 4px 10px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+
+        /* Content Actions (Add & Save buttons) */
+        .content-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-save-content {
+            flex: 1;
+            padding: 10px;
+            background: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-save-content:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-save-content:active {
+            transform: translateY(0);
+        }
+
+        /* Adjust btn-add-field to work with content-actions */
+        .content-actions .btn-add-field {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        /* AI Prompt Section */
+        .ai-prompt-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2);
+        }
+
+        .ai-prompt-header {
+            margin-bottom: 20px;
+        }
+
+        .ai-prompt-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-prompt-subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .ai-prompt-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .ai-prompt-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-family: 'Inter', 'Noto Sans KR', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text-primary);
+            resize: vertical;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #F8FAFC;
+        }
+
+        .ai-prompt-textarea:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .ai-prompt-textarea::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .ai-prompt-actions {
+            margin-top: 16px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-save-prompt {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-save-prompt:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-save-prompt:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <img src="logo.png" class="logo-icon" alt="Logo">
+                <span class="logo-text">지킴진단 Admin</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <span class="icon">📄</span>
+                    리포트 발급 이력
+                </a>
+                <a href="#" class="nav-item active">
+                    <span class="icon">⚙️</span>
+                    컨텐츠 관리
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="breadcrumbs">
+                    <span>홈</span> / <span class="current">컨텐츠 관리</span>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar">A</div>
+                    <span class="username">관리자님</span>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <div>
+                        <h1>리포트 컨텐츠 관리</h1>
+                        <p class="subtitle">리포트에 표시되는 주요 안내 문구를 수정합니다.</p>
+                    </div>
+                </div>
+
+                <div class="tabs-container">
+                    <div class="tabs-header">
+                        <button class="tab-btn active" onclick="openTab(event, 'sale-multi')">매매-집합건물</button>
+                        <button class="tab-btn" onclick="openTab(event, 'sale-general')">매매-일반건물</button>
+                        <button class="tab-btn" onclick="openTab(event, 'jeonse-multi')">전세-집합건물</button>
+                        <button class="tab-btn" onclick="openTab(event, 'jeonse-general')">전세-일반건물</button>
+                        <button class="tab-btn" onclick="openTab(event, 'monthly-multi')">월세-집합건물</button>
+                        <button class="tab-btn" onclick="openTab(event, 'monthly-general')">월세-일반건물</button>
+                    </div>
+
+                    <div id="sale-multi" class="tab-content active"></div>
+                    <div id="sale-general" class="tab-content"></div>
+                    <div id="jeonse-multi" class="tab-content"></div>
+                    <div id="jeonse-general" class="tab-content"></div>
+                    <div id="monthly-multi" class="tab-content"></div>
+                    <div id="monthly-general" class="tab-content"></div>
+                </div>
+            </div>
+    </div>
+    </main>
+    </div>
+
+    <script>
+        const checklistItems = [
+            "위반건축물", "대지권", "토지별도등기", "가등기", "압류/가압류",
+            "처분금지가처분", "신탁", "경매개시결정", "근저당권", "임차권등기명령",
+            "전세권", "민간임대주택등록 여부", "등기사항 변경예정", "건물,토지 소유자 일치",
+            "임대사업자 등록", "보증금미반환 이력", "기존채무금액", "여유금액",
+            "보증보험 예비심사", "보증금 대출 예비 심사", "최우선 변제권"
+        ];
+
+        function renderChecklist(containerId) {
+            const container = document.getElementById(containerId);
+            let html = '<div class="checklist-grid">';
+            checklistItems.forEach((item, index) => {
+                const uniqueId = `${containerId}-${index}`;
+                html += `
+                    <div class="checklist-item" id="item-${uniqueId}" data-last-updated="${new Date().toISOString()}">
+                        <div class="checklist-header">
+                            <label class="checklist-label">${item}</label>
+                            <span class="update-date" id="date-${uniqueId}">최종 수정: ${formatDate(new Date())}</span>
+                        </div>
+                        
+                        <!-- Status Tabs -->
+                        <div class="status-tabs-wrapper">
+                            <button class="status-tab safe active" onclick="toggleStatusItem('${uniqueId}', 'safe')">양호</button>
+                            <button class="status-tab caution" onclick="toggleStatusItem('${uniqueId}', 'caution')">확인 필요</button>
+                        </div>
+
+                        <!-- Safe (Good) Content -->
+                        <div id="${uniqueId}-safe" class="status-content-area active">
+                            ${renderRadioGroup(uniqueId, 'safe', item)}
+                        </div>
+
+                        <!-- Caution (Need Check) Content -->
+                        <div id="${uniqueId}-caution" class="status-content-area">
+                            ${renderRadioGroup(uniqueId, 'caution', item)}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function renderRadioGroup(uniqueId, status, itemName) {
+            const definitionPlaceholder = `[${getStatusName(status)} - 정의] 해당 항목에 대한 정의를 입력하세요`;
+            const guidePlaceholder = `[${getStatusName(status)} - 안내] 사용자에게 안내할 가이드를 입력하세요`;
+            const specialPlaceholder = `[${getStatusName(status)} - 특약] 특약 사항을 입력하세요`;
+
+            // 토지별도등기 항목에만 드롭다운 추가
+            const isLandRegistration = itemName === '토지별도등기';
+            const dropdownHtml = isLandRegistration ? `
+                <select class="land-type-dropdown" id="land-type-${uniqueId}-${status}" onchange="updateLandType('${uniqueId}', '${status}')">
+                    <option value="구분지상권">구분지상권</option>
+                    <option value="근저당권">근저당권</option>
+                    <option value="기타">기타</option>
+                </select>
+            ` : '';
+
+            return `
+                <div class="radio-group-wrapper">
+                    <div class="radio-buttons-group">
+                        <label class="radio-label">
+                            <input type="radio" name="type-${uniqueId}-${status}" value="guide" checked onchange="toggleContentSection('${uniqueId}', '${status}', 'guide')">
+                            <span>안내</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="type-${uniqueId}-${status}" value="definition" onchange="toggleContentSection('${uniqueId}', '${status}', 'definition')">
+                            <span>설명</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="type-${uniqueId}-${status}" value="special" onchange="toggleContentSection('${uniqueId}', '${status}', 'special')">
+                            <span>특약</span>
+                        </label>
+                    </div>
+                    ${dropdownHtml}
+                </div>
+
+                <div id="${uniqueId}-${status}-definition" class="content-input-area">
+                    <div class="input-list" id="list-${uniqueId}-${status}-definition">
+                        ${createInputBlock(definitionPlaceholder)}
+                    </div>
+                    <div class="content-actions">
+                        <button class="btn-add-field" onclick="addInputField('list-${uniqueId}-${status}-definition', '${definitionPlaceholder}')">
+                            + 추가하기
+                        </button>
+                        <button class="btn-save-content" onclick="saveContent('${uniqueId}', '${status}', 'definition')">
+                            💾 저장하기
+                        </button>
+                    </div>
+                </div>
+                <div id="${uniqueId}-${status}-guide" class="content-input-area active">
+                    <div class="input-list" id="list-${uniqueId}-${status}-guide">
+                        ${createInputBlock(guidePlaceholder)}
+                    </div>
+                    <div class="content-actions">
+                        <button class="btn-add-field" onclick="addInputField('list-${uniqueId}-${status}-guide', '${guidePlaceholder}')">
+                            + 추가하기
+                        </button>
+                        <button class="btn-save-content" onclick="saveContent('${uniqueId}', '${status}', 'guide')">
+                            💾 저장하기
+                        </button>
+                    </div>
+                </div>
+                <div id="${uniqueId}-${status}-special" class="content-input-area">
+                    <div class="input-list" id="list-${uniqueId}-${status}-special">
+                        ${createInputBlock(specialPlaceholder)}
+                    </div>
+                    <div class="content-actions">
+                        <button class="btn-add-field" onclick="addInputField('list-${uniqueId}-${status}-special', '${specialPlaceholder}')">
+                            + 추가하기
+                        </button>
+                        <button class="btn-save-content" onclick="saveContent('${uniqueId}', '${status}', 'special')">
+                            💾 저장하기
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createInputBlock(placeholder, isRemovable = false) {
+            const removeBtn = isRemovable ?
+                `<button class="btn-remove-field" onclick="this.closest('.input-wrapper-dynamic').remove()">삭제</button>` : '';
+
+            return `
+                <div class="input-wrapper-dynamic">
+                    <div class="input-header">
+                        <textarea class="title-input" placeholder="제목을 입력하세요" rows="2"></textarea>
+                        ${removeBtn}
+                    </div>
+                    <textarea class="checklist-input" placeholder="${placeholder}" rows="3"></textarea>
+                </div>
+            `;
+        }
+
+        function addInputField(containerId, placeholder) {
+            const container = document.getElementById(containerId);
+            container.insertAdjacentHTML('beforeend', createInputBlock(placeholder, true));
+        }
+
+        function getStatusName(status) {
+            if (status === 'safe') return '양호';
+            if (status === 'caution') return '확인 필요';
+            return '';
+        }
+
+        function toggleStatusItem(uniqueId, status) {
+            const itemContainer = document.getElementById(`item-${uniqueId}`);
+
+            // Update tabs
+            const tabs = itemContainer.querySelectorAll('.status-tab');
+            tabs.forEach(tab => {
+                if (tab.classList.contains(status)) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            // Update status content areas
+            const areas = itemContainer.querySelectorAll('.status-content-area');
+            areas.forEach(area => {
+                area.classList.remove('active');
+            });
+            document.getElementById(`${uniqueId}-${status}`).classList.add('active');
+        }
+
+        function toggleContentSection(uniqueId, status, type) {
+            const statusContainer = document.getElementById(`${uniqueId}-${status}`);
+
+            // Update content input areas within this status container
+            const areas = statusContainer.querySelectorAll('.content-input-area');
+            areas.forEach(area => {
+                area.classList.remove('active');
+            });
+            document.getElementById(`${uniqueId}-${status}-${type}`).classList.add('active');
+        }
+
+        function updateLandType(uniqueId, status) {
+            const dropdown = document.getElementById(`land-type-${uniqueId}-${status}`);
+            const selectedType = dropdown.value;
+            console.log(`토지 유형 변경: ${selectedType} (항목: ${uniqueId}, 상태: ${status})`);
+            // 여기에 선택된 유형에 따른 추가 로직을 구현할 수 있습니다
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}.${month}.${day} ${hours}:${minutes}`;
+        }
+
+        function saveContent(uniqueId, status, type) {
+            // 현재 시간으로 업데이트
+            const now = new Date();
+            const itemElement = document.getElementById(`item-${uniqueId}`);
+            itemElement.setAttribute('data-last-updated', now.toISOString());
+
+            // 날짜 표시 업데이트
+            const dateElement = document.getElementById(`date-${uniqueId}`);
+            dateElement.textContent = `최종 수정: ${formatDate(now)}`;
+
+            // 저장 성공 메시지
+            alert(`저장되었습니다.\n항목: ${uniqueId}\n상태: ${getStatusName(status)}\n타입: ${type}`);
+        }
+
+        // Render for all tabs
+        ['sale-multi', 'sale-general', 'jeonse-multi', 'jeonse-general', 'monthly-multi', 'monthly-general'].forEach(id => {
+            renderChecklist(id);
+        });
+
+        function openTab(evt, tabName) {
+            var i, tabContent, tabBtns;
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+                tabContent[i].classList.remove("active");
+            }
+            tabBtns = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tabBtns.length; i++) {
+                tabBtns[i].className = tabBtns[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            setTimeout(() => {
+                document.getElementById(tabName).classList.add("active");
+            }, 10);
+            evt.currentTarget.className += " active";
+        }
+    </script>
+    </div>
+    </main>
+    </div>
+</body>
+
+</html>
