@@ -1,18 +1,35 @@
-/jikim-admin-web-v10.zip
-/jikim-admin-web-v11.zip
-/jikim-admin-web-v12.zip
-/jikim-admin-web-v13.zip
-/jikim-admin-web-v14.zip
-/jikim-admin-web-v15.zip
-/jikim-admin-web-v16.zip
-/jikim-admin-web-v17.zip
-/jikim-admin-web-v18.zip
-/jikim-admin-web-v2.zip
-/jikim-admin-web-v3.zip
-/jikim-admin-web-v4.zip
-/jikim-admin-web-v5.zip
-/jikim-admin-web-v6.zip
-/jikim-admin-web-v7.zip
-/jikim-admin-web-v8.zip
-/jikim-admin-web-v9.zip
-/jikim-admin-web.zip
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
