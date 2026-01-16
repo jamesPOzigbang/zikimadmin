@@ -1123,6 +1123,143 @@
             transform: translateY(0);
         }
     </style>
+    <style>
+        /* Filter Styles */
+        .filter-container {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-row {
+            display: flex;
+            margin-bottom: 20px;
+            align-items: flex-start;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 20px;
+        }
+
+        .filter-row:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .filter-label {
+            width: 120px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 15px;
+            padding-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .filter-options {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+            color: var(--text-secondary);
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .checkbox-label:hover {
+            background-color: #F8FAFC;
+            color: var(--primary-color);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .checkbox-label.checked {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Card Header Badges */
+        .card-badges {
+            display: flex;
+            gap: 6px;
+            margin-left: 12px;
+        }
+
+        .badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background-color: #F1F5F9;
+            color: var(--text-secondary);
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+        }
+
+        .badge.sale {
+            background-color: #eff6ff;
+            color: #1e40af;
+            border-color: #dbeafe;
+        }
+
+        .badge.jeonse {
+            background-color: #f0fdf4;
+            color: #166534;
+            border-color: #dcfce7;
+        }
+
+        .badge.monthly {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border-color: #fee2e2;
+        }
+
+        .badge.building {
+            background-color: #f8fafc;
+            color: #475569;
+            border-color: #e2e8f0;
+        }
+
+        .badge.safe {
+            background-color: #DCFCE7;
+            color: #166534;
+            border-color: #bbf7d0;
+        }
+
+        .badge.caution {
+            background-color: #FEF3C7;
+            color: #92400E;
+            border-color: #fde68a;
+        }
+
+        .badge.etc {
+            background-color: #F1F5F9;
+            color: #475569;
+            border-color: #E2E8F0;
+        }
+
+        .checklist-label {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+    </style>
 </head>
 
 <body>
@@ -1165,23 +1302,80 @@
                     </div>
                 </div>
 
-                <div class="tabs-container">
-                    <div class="tabs-header">
-                        <button class="tab-btn active" onclick="openTab(event, 'sale-multi')">매매-집합건물</button>
-                        <button class="tab-btn" onclick="openTab(event, 'sale-general')">매매-일반건물</button>
-                        <button class="tab-btn" onclick="openTab(event, 'jeonse-multi')">전세-집합건물</button>
-                        <button class="tab-btn" onclick="openTab(event, 'jeonse-general')">전세-일반건물</button>
-                        <button class="tab-btn" onclick="openTab(event, 'monthly-multi')">월세-집합건물</button>
-                        <button class="tab-btn" onclick="openTab(event, 'monthly-general')">월세-일반건물</button>
+                <!-- Filter Section -->
+                <div class="filter-container">
+                    <div class="filter-row">
+                        <div class="filter-label">거래 타입</div>
+                        <div class="filter-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="transaction-all" class="filter-all"
+                                    data-target="transaction" checked>
+                                <span>전체</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="transaction" value="매매" checked>
+                                <span>매매</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="transaction" value="전세" checked>
+                                <span>전세</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="transaction" value="월세" checked>
+                                <span>월세</span>
+                            </label>
+                        </div>
                     </div>
-
-                    <div id="sale-multi" class="tab-content active"></div>
-                    <div id="sale-general" class="tab-content"></div>
-                    <div id="jeonse-multi" class="tab-content"></div>
-                    <div id="jeonse-general" class="tab-content"></div>
-                    <div id="monthly-multi" class="tab-content"></div>
-                    <div id="monthly-general" class="tab-content"></div>
+                    <div class="filter-row">
+                        <div class="filter-label">건물 종류</div>
+                        <div class="filter-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="building-all" class="filter-all" data-target="building"
+                                    checked>
+                                <span>전체</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="building" value="일반건물" checked>
+                                <span>일반건물</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="building" value="집합건물" checked>
+                                <span>집합건물</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-label">상태</div>
+                        <div class="filter-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="status-all" class="filter-all" data-target="status"
+                                    checked>
+                                <span>전체</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="status" value="양호" checked>
+                                <span>양호</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="status" value="확인필요" checked>
+                                <span>확인필요</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="status" value="기타" checked>
+                                <span>기타</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-label">항목</div>
+                        <div class="filter-options" id="category-filters">
+                            <!-- JS will populate this -->
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Cards Container -->
+                <div id="checklist-container" class="checklist-grid"></div>
             </div>
     </div>
     </main>
@@ -1189,51 +1383,189 @@
 
     <script>
         const checklistItems = [
-            "위반건축물", "대지권", "토지별도등기", "가등기", "압류/가압류",
+            "주택유형", "추정시세", "위반건축물", "대지권", "토지별도등기", "가등기", "압류/가압류",
             "처분금지가처분", "신탁", "경매개시결정", "근저당권", "임차권등기명령",
             "전세권", "민간임대주택등록 여부", "등기사항 변경예정", "건물,토지 소유자 일치",
             "임대사업자 등록", "보증금미반환 이력", "기존채무금액", "여유금액",
             "보증보험 예비심사", "보증금 대출 예비 심사", "최우선 변제권"
         ];
 
-        function renderChecklist(containerId) {
-            const container = document.getElementById(containerId);
-            let html = '<div class="checklist-grid">';
+        const transactionTypes = ['매매', '전세', '월세'];
+        const buildingTypes = ['일반건물', '집합건물'];
+        const statusTypes = ['양호', '확인필요', '기타'];
+
+        // Code Mapping for IDs
+        const codeMap = {
+            '매매': 'sale', '전세': 'jeonse', '월세': 'monthly',
+            '일반건물': 'general', '집합건물': 'multi',
+            '양호': 'safe', '확인필요': 'caution', '기타': 'etc'
+        };
+
+        // Initialize Page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCategoryFilters();
+            renderAllCards();
+            setupFilterListeners();
+        });
+
+        function renderCategoryFilters() {
+            const container = document.getElementById('category-filters');
+            let html = `
+                <label class="checkbox-label">
+                    <input type="checkbox" name="category-all" class="filter-all" data-target="category" checked>
+                    <span>전체</span>
+                </label>
+            `;
+
             checklistItems.forEach((item, index) => {
-                const uniqueId = `${containerId}-${index}`;
                 html += `
-                    <div class="checklist-item" id="item-${uniqueId}" data-last-updated="${new Date().toISOString()}">
-                        <div class="checklist-header">
-                            <label class="checklist-label">${item}</label>
-                            <span class="update-date" id="date-${uniqueId}">최종 수정: ${formatDate(new Date())}</span>
-                        </div>
-                        
-                        <!-- Status Tabs -->
-                        <div class="status-tabs-wrapper">
-                            <button class="status-tab safe active" onclick="toggleStatusItem('${uniqueId}', 'safe')">양호</button>
-                            <button class="status-tab caution" onclick="toggleStatusItem('${uniqueId}', 'caution')">확인 필요</button>
-                        </div>
-
-                        <!-- Safe (Good) Content -->
-                        <div id="${uniqueId}-safe" class="status-content-area active">
-                            ${renderRadioGroup(uniqueId, 'safe', item)}
-                        </div>
-
-                        <!-- Caution (Need Check) Content -->
-                        <div id="${uniqueId}-caution" class="status-content-area">
-                            ${renderRadioGroup(uniqueId, 'caution', item)}
-                        </div>
-                    </div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="category" value="${item}" checked>
+                        <span>${item}</span>
+                    </label>
                 `;
             });
-            html += '</div>';
             container.innerHTML = html;
         }
 
+        function renderAllCards() {
+            const container = document.getElementById('checklist-container');
+            let html = '';
+
+            checklistItems.forEach((item, itemIdx) => {
+                transactionTypes.forEach(tType => {
+                    buildingTypes.forEach(bType => {
+                        statusTypes.forEach(sType => {
+                            html += createCardHtml(item, itemIdx, tType, bType, sType);
+                        });
+                    });
+                });
+            });
+
+            container.innerHTML = html;
+        }
+
+        function createCardHtml(item, itemIdx, tType, bType, sType) {
+            const tCode = codeMap[tType];
+            const bCode = codeMap[bType];
+            const sCode = codeMap[sType];
+            const uniqueId = `${itemIdx}-${tCode}-${bCode}-${sCode}`; // Updated uniqueId to include status
+
+            // Badge Classes
+            const tBadgeClass = tCode;
+            const sBadgeClass = sCode; // safe, caution, etc
+
+            return `
+                <div class="checklist-item" 
+                     id="item-${uniqueId}" 
+                     data-category="${item}" 
+                     data-transaction="${tType}" 
+                     data-building="${bType}"
+                     data-status="${sType}"
+                     data-last-updated="${new Date().toISOString()}">
+                     
+                    <div class="checklist-header">
+                        <div style="flex: 1">
+                            <label class="checklist-label">
+                                ${item}
+                                <div class="card-badges">
+                                    <span class="badge ${tBadgeClass}">${tType}</span>
+                                    <span class="badge building">${bType}</span>
+                                    <span class="badge ${sBadgeClass}">${sType}</span>
+                                </div>
+                            </label>
+                        </div>
+                        <span class="update-date" id="date-${uniqueId}" style="flex-shrink: 0">최종 수정: ${formatDate(new Date())}</span>
+                    </div>
+                    
+                    <!-- Content Area (Directly rendered without tabs) -->
+                    <div id="${uniqueId}-${sCode}" class="status-content-area active">
+                        ${renderRadioGroup(uniqueId, sCode, item)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function setupFilterListeners() {
+            // "All" Checkboxes
+            document.querySelectorAll('.filter-all').forEach(allCb => {
+                allCb.addEventListener('change', (e) => {
+                    const targetName = e.target.dataset.target; // transaction, building, category, status
+                    const checkboxes = document.getElementsByName(targetName);
+                    checkboxes.forEach(cb => cb.checked = e.target.checked);
+                    filterCards();
+                });
+            });
+
+            // Individual Checkboxes
+            const allCheckboxes = document.querySelectorAll('input[type="checkbox"]:not(.filter-all)');
+            allCheckboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    // Start checking "All" status
+                    const name = cb.name;
+                    const allCb = document.querySelector(`.filter-all[data-target="${name}"]`);
+                    if (allCb) {
+                        const siblings = document.getElementsByName(name);
+                        const allChecked = Array.from(siblings).every(sibling => sibling.checked);
+                        allCb.checked = allChecked;
+                    }
+                    filterCards();
+                });
+            });
+        }
+
+        function filterCards() {
+            const selectedTransactions = Array.from(document.querySelectorAll('input[name="transaction"]:checked')).map(cb => cb.value);
+            const selectedBuildings = Array.from(document.querySelectorAll('input[name="building"]:checked')).map(cb => cb.value);
+            const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => cb.value);
+            const selectedStatuses = Array.from(document.querySelectorAll('input[name="status"]:checked')).map(cb => cb.value);
+
+            const cards = document.querySelectorAll('.checklist-item');
+
+            cards.forEach(card => {
+                const cTrans = card.dataset.transaction;
+                const cBuild = card.dataset.building;
+                const cCat = card.dataset.category;
+                const cStatus = card.dataset.status;
+
+                const show = selectedTransactions.includes(cTrans) &&
+                    selectedBuildings.includes(cBuild) &&
+                    selectedCategories.includes(cCat) &&
+                    selectedStatuses.includes(cStatus);
+
+                card.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        // renderRadioGroup function remains largely the same but sCode is passed as status
         function renderRadioGroup(uniqueId, status, itemName) {
             const definitionPlaceholder = `[${getStatusName(status)} - 정의] 해당 항목에 대한 정의를 입력하세요`;
             const guidePlaceholder = `[${getStatusName(status)} - 안내] 사용자에게 안내할 가이드를 입력하세요`;
             const specialPlaceholder = `[${getStatusName(status)} - 특약] 특약 사항을 입력하세요`;
+
+            // "특약" should be hidden if status is 'etc'
+            const isEtc = status === 'etc';
+            const specialOption = isEtc ? '' : `
+                        <label class="radio-label">
+                            <input type="radio" name="type-${uniqueId}-${status}" value="special" onchange="toggleContentSection('${uniqueId}', '${status}', 'special')">
+                            <span>특약</span>
+                        </label>
+            `;
+            const specialContent = isEtc ? '' : `
+                <div id="${uniqueId}-${status}-special" class="content-input-area">
+                    <div class="input-list" id="list-${uniqueId}-${status}-special">
+                        ${createInputBlock(specialPlaceholder)}
+                    </div>
+                    <div class="content-actions">
+                        <button class="btn-add-field" onclick="addInputField('list-${uniqueId}-${status}-special', '${specialPlaceholder}')">
+                            + 추가하기
+                        </button>
+                        <button class="btn-save-content" onclick="saveContent('${uniqueId}', '${status}', 'special')">
+                            💾 저장하기
+                        </button>
+                    </div>
+                </div>
+            `;
 
             // 토지별도등기 항목에만 드롭다운 추가
             const isLandRegistration = itemName === '토지별도등기';
@@ -1257,10 +1589,7 @@
                             <input type="radio" name="type-${uniqueId}-${status}" value="definition" onchange="toggleContentSection('${uniqueId}', '${status}', 'definition')">
                             <span>설명</span>
                         </label>
-                        <label class="radio-label">
-                            <input type="radio" name="type-${uniqueId}-${status}" value="special" onchange="toggleContentSection('${uniqueId}', '${status}', 'special')">
-                            <span>특약</span>
-                        </label>
+                        ${specialOption}
                     </div>
                     ${dropdownHtml}
                 </div>
@@ -1291,21 +1620,11 @@
                         </button>
                     </div>
                 </div>
-                <div id="${uniqueId}-${status}-special" class="content-input-area">
-                    <div class="input-list" id="list-${uniqueId}-${status}-special">
-                        ${createInputBlock(specialPlaceholder)}
-                    </div>
-                    <div class="content-actions">
-                        <button class="btn-add-field" onclick="addInputField('list-${uniqueId}-${status}-special', '${specialPlaceholder}')">
-                            + 추가하기
-                        </button>
-                        <button class="btn-save-content" onclick="saveContent('${uniqueId}', '${status}', 'special')">
-                            💾 저장하기
-                        </button>
-                    </div>
-                </div>
+                ${specialContent}
             `;
         }
+
+        // Helper functions from previous restoration are below this block
 
         function createInputBlock(placeholder, isRemovable = false) {
             const removeBtn = isRemovable ?
@@ -1330,6 +1649,7 @@
         function getStatusName(status) {
             if (status === 'safe') return '양호';
             if (status === 'caution') return '확인 필요';
+            if (status === 'etc') return '기타';
             return '';
         }
 
@@ -1393,29 +1713,6 @@
 
             // 저장 성공 메시지
             alert(`저장되었습니다.\n항목: ${uniqueId}\n상태: ${getStatusName(status)}\n타입: ${type}`);
-        }
-
-        // Render for all tabs
-        ['sale-multi', 'sale-general', 'jeonse-multi', 'jeonse-general', 'monthly-multi', 'monthly-general'].forEach(id => {
-            renderChecklist(id);
-        });
-
-        function openTab(evt, tabName) {
-            var i, tabContent, tabBtns;
-            tabContent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabContent.length; i++) {
-                tabContent[i].style.display = "none";
-                tabContent[i].classList.remove("active");
-            }
-            tabBtns = document.getElementsByClassName("tab-btn");
-            for (i = 0; i < tabBtns.length; i++) {
-                tabBtns[i].className = tabBtns[i].className.replace(" active", "");
-            }
-            document.getElementById(tabName).style.display = "block";
-            setTimeout(() => {
-                document.getElementById(tabName).classList.add("active");
-            }, 10);
-            evt.currentTarget.className += " active";
         }
     </script>
     </div>
