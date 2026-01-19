@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지킴진단 관리자 - 환불 관리</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            /* Colors */
+            --primary-color: #009720;
+            --primary-light: #009720;
+            --accent-color: #009720;
+            --bg-color: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --border-color: #E2E8F0;
+
+            /* Status Colors */
+            --status-success-bg: #DCFCE7;
+            --status-success-text: #166534;
+            --status-fail-bg: #FEE2E2;
+            --status-fail-text: #991B1B;
+            --status-error-bg: #FEF3C7;
+            --status-error-text: #92400E;
+            --status-refund-bg: #F1F5F9;
+            --status-refund-text: #475569;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        /* Sidebar Styles */
+        .sidebar-link.active {
+            background-color: rgba(0, 151, 32, 0.1);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 border-r bg-white flex flex-col flex-shrink-0">
+        <div class="h-16 border-b flex items-center px-6">
+             <img src="logo.png" alt="Logo" class="w-6 h-6 mr-3 rounded-md">
+            <span class="font-bold text-lg text-[#009720]">지킴진단 Admin</span>
+        </div>
+        <nav class="flex-1 p-4 space-y-1">
+            <a href="index.html" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                리포트 발급 이력
+            </a>
+            <a href="content-management-standalone.html" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                컨텐츠 관리
+            </a>
+            <a href="#" class="sidebar-link active flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                환불 관리
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="h-16 border-b bg-white flex items-center justify-between px-8 flex-shrink-0">
+            <div class="text-sm text-gray-500">
+                <span>홈</span> / <span class="font-medium text-gray-900">환불 관리</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-[#009720] flex items-center justify-center text-white text-xs font-bold">
+                    AD
+                </div>
+                <span class="text-sm font-medium">관리자</span>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="flex-1 overflow-y-auto bg-gray-50 p-8">
+            <div class="max-w-7xl mx-auto space-y-6">
+                <div>
+                    <h1 class="text-2xl font-bold mb-1 text-gray-900">환불 관리</h1>
+                    <p class="text-gray-500">환불 신청 내역을 조회하고 처리합니다.</p>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-gray-700">환불번호</label>
+                            <input type="text" id="filter-id" placeholder="환불번호 입력" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#009720] focus:border-transparent">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-gray-700">사용자 ID</label>
+                            <input type="text" id="filter-user" placeholder="ID 입력" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#009720] focus:border-transparent">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-gray-700">신청일</label>
+                            <input type="date" id="filter-date" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#009720] focus:border-transparent">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-gray-700">상태</label>
+                            <select id="filter-status" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#009720] focus:border-transparent">
+                                <option value="all">전체</option>
+                                <option value="requested">신청</option>
+                                <option value="completed">완료</option>
+                                <option value="cancelled">취소</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-6 py-3 font-medium text-gray-500">환불번호</th>
+                                    <th class="px-6 py-3 font-medium text-gray-500">사용자 ID</th>
+                                    <th class="px-6 py-3 font-medium text-gray-500">신청일</th>
+                                    <th class="px-6 py-3 font-medium text-gray-500">상태</th>
+                                    <th class="px-6 py-3 font-medium text-gray-500">환불금액</th>
+                                    <th class="px-6 py-3 font-medium text-gray-500">처리일시</th>
+                                    <th class="px-6 py-3 font-medium text-gray-500 text-right">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody id="refund-table-body" class="divide-y divide-gray-200">
+                                <!-- Table rows will be inserted here by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div id="refund-modal" class="fixed inset-0 z-50 hidden">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black/50 transition-opacity" onclick="closeModal()"></div>
+        
+        <!-- Modal Content -->
+        <div class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-lg shadow-lg border border-gray-200 p-6 z-50 animate-fade-in-up">
+            <div class="flex flex-col space-y-1.5 text-center sm:text-left mb-6">
+                <h2 class="text-lg font-semibold leading-none tracking-tight">환불 처리</h2>
+                <p class="text-sm text-gray-500">아래 내용을 확인 후 환불을 진행해주세요.</p>
+            </div>
+
+            <div class="grid gap-4 py-4 mb-6">
+                <div class="grid grid-cols-4 items-center gap-4">
+                    <span class="text-sm font-medium text-right text-gray-900">환불번호</span>
+                    <span id="modal-refund-id" class="col-span-3 text-gray-700"></span>
+                </div>
+                <div class="grid grid-cols-4 items-center gap-4">
+                    <span class="text-sm font-medium text-right text-gray-900">신청자</span>
+                    <span id="modal-user-id" class="col-span-3 text-gray-700"></span>
+                </div>
+                <div class="grid grid-cols-4 items-center gap-4">
+                    <span class="text-sm font-medium text-right text-gray-900">환불금액</span>
+                    <span id="modal-amount" class="col-span-3 font-bold text-lg text-red-600"></span>
+                </div>
+            </div>
+
+            <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                <button onclick="closeModal()" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background border border-gray-200 bg-white hover:bg-gray-100 h-10 py-2 px-4">취소</button>
+                <button onclick="confirmRefund()" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-[#009720] text-white hover:bg-[#009720]/90 h-10 py-2 px-4">환불 진행 (완료처리)</button>
+            </div>
+            
+            <button onclick="closeModal()" class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                <span class="sr-only">Close</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        let refunds = [
+            {
+                id: "REF-2024001",
+                userId: "user01",
+                requestDate: "2024-01-15",
+                status: "requested",
+                amount: 50000,
+            },
+            {
+                id: "REF-2024002",
+                userId: "user02",
+                requestDate: "2024-01-14",
+                status: "completed",
+                amount: 12000,
+                processedAt: "2024.01.14 15:30:00",
+            },
+            {
+                id: "REF-2024003",
+                userId: "user03",
+                requestDate: "2024-01-13",
+                status: "cancelled",
+                amount: 35000,
+            },
+            {
+                id: "REF-2024004",
+                userId: "user04",
+                requestDate: "2024-01-16",
+                status: "requested",
+                amount: 150000,
+            },
+        ];
+
+        let selectedRefundId = null;
+
+        // Elements
+        const tableBody = document.getElementById('refund-table-body');
+        const modal = document.getElementById('refund-modal');
+        const filterId = document.getElementById('filter-id');
+        const filterUser = document.getElementById('filter-user');
+        const filterDate = document.getElementById('filter-date');
+        const filterStatus = document.getElementById('filter-status');
+
+        // Functions
+        function renderTable() {
+            const fId = filterId.value.toLowerCase();
+            const fUser = filterUser.value.toLowerCase();
+            const fDate = filterDate.value;
+            const fStatus = filterStatus.value;
+
+            const filtered = refunds.filter(r => {
+                if (fId && !r.id.toLowerCase().includes(fId)) return false;
+                if (fUser && !r.userId.toLowerCase().includes(fUser)) return false;
+                if (fDate && r.requestDate !== fDate) return false;
+                if (fStatus !== 'all' && r.status !== fStatus) return false;
+                return true;
+            });
+
+            tableBody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                            검색 결과가 없습니다.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filtered.forEach(r => {
+                let badgeClass = '';
+                let badgeText = '';
+                if (r.status === 'requested') {
+                    badgeClass = 'bg-secondary text-secondary-foreground hover:bg-secondary/80 bg-gray-100 text-gray-800';
+                    badgeText = '신청';
+                } else if (r.status === 'completed') {
+                    badgeClass = 'bg-green-100 text-green-800';
+                    badgeText = '완료';
+                } else if (r.status === 'cancelled') {
+                    badgeClass = 'bg-red-100 text-red-800';
+                    badgeText = '취소';
+                }
+
+                let actionHtml = '';
+                if (r.status === 'requested') {
+                    actionHtml = `<button onclick="openModal('${r.id}')" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 border border-gray-200 hover:bg-gray-100 bg-white">환불 처리</button>`;
+                } else if (r.status === 'completed') {
+                    actionHtml = `<span class="text-sm text-green-600 font-medium">처리완료</span>`;
+                } else if (r.status === 'cancelled') {
+                    actionHtml = `<span class="text-sm text-gray-500">취소됨</span>`;
+                }
+
+                const row = `
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                        <td class="px-6 py-4 font-medium">${r.id}</td>
+                        <td class="px-6 py-4">${r.userId}</td>
+                        <td class="px-6 py-4">${r.requestDate}</td>
+                        <td class="px-6 py-4"><span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent ${badgeClass}">${badgeText}</span></td>
+                        <td class="px-6 py-4">${r.amount.toLocaleString()}원</td>
+                        <td class="px-6 py-4 text-gray-500">${r.processedAt || '-'}</td>
+                        <td class="px-6 py-4 text-right">${actionHtml}</td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        function openModal(id) {
+            const refund = refunds.find(r => r.id === id);
+            if (!refund) return;
+            selectedRefundId = id;
+            
+            document.getElementById('modal-refund-id').textContent = refund.id;
+            document.getElementById('modal-user-id').textContent = refund.userId;
+            document.getElementById('modal-amount').textContent = refund.amount.toLocaleString() + '원';
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            selectedRefundId = null;
+        }
+
+        function confirmRefund() {
+            if (!selectedRefundId) return;
+
+            const now = new Date();
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const hh = String(now.getHours()).padStart(2, '0');
+            const min = String(now.getMinutes()).padStart(2, '0');
+            const ss = String(now.getSeconds()).padStart(2, '0');
+            const formattedDate = `${yyyy}.${mm}.${dd} ${hh}:${min}:${ss}`;
+
+            refunds = refunds.map(r => {
+                if (r.id === selectedRefundId) {
+                    return { ...r, status: 'completed', processedAt: formattedDate };
+                }
+                return r;
+            });
+
+            closeModal();
+            renderTable();
+        }
+
+        // Event Listeners
+        filterId.addEventListener('input', renderTable);
+        filterUser.addEventListener('input', renderTable);
+        filterDate.addEventListener('input', renderTable);
+        filterStatus.addEventListener('change', renderTable);
+
+        // Initial Render
+        renderTable();
+
+    </script>
+</body>
+</html>
