@@ -2,11 +2,11 @@
 // Mock Dummy Data
 const reportData = Array.from({ length: 15 }, (_, i) => ({
     id: `RPT-2023-${(1000 + i).toString()}`,
+    email: `user${100 + i}@example.com`,
     date: `2023-12-${String(Math.max(1, 30 - i)).padStart(2, '0')} 14:30`,
     address: `서울시 강남구 테헤란로 ${100 + i}길 ${i + 1}`,
     type: i % 3 === 0 ? '아파트' : i % 3 === 1 ? '빌라' : '오피스텔',
     purpose: i % 2 === 0 ? '매매' : '전세',
-    payment: '카드결제',
     status: ['완료', '진행중', '취소'][i % 3],
     // New Fields
     period: '24개월',
@@ -30,6 +30,7 @@ const checklistItems = [
 const tableBody = document.getElementById('reportTableBody');
 
 // Initialize
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     // Check if we are on the detail page
     const urlParams = new URLSearchParams(window.location.search);
@@ -39,8 +40,32 @@ document.addEventListener('DOMContentLoaded', () => {
         renderReportDetail(reportId);
     } else {
         renderTable(reportData);
+        setupFilters();
     }
 });
+
+function setupFilters() {
+    const searchIdInput = document.getElementById('search-report-id');
+    const searchEmailInput = document.getElementById('search-email');
+
+    if (searchIdInput && searchEmailInput) {
+        const filterHandler = () => {
+            const idTerm = searchIdInput.value.toLowerCase();
+            const emailTerm = searchEmailInput.value.toLowerCase();
+
+            const filtered = reportData.filter(item => {
+                const matchId = item.id.toLowerCase().includes(idTerm);
+                const matchEmail = item.email.toLowerCase().includes(emailTerm);
+                return matchId && matchEmail;
+            });
+
+            renderTable(filtered);
+        };
+
+        searchIdInput.addEventListener('input', filterHandler);
+        searchEmailInput.addEventListener('input', filterHandler);
+    }
+}
 
 // Render Table
 function renderTable(data) {
@@ -49,11 +74,11 @@ function renderTable(data) {
     tableBody.innerHTML = data.map(item => `
         <tr onclick="openReportDetail('${item.id}')">
             <td><span style="font-family: monospace; font-weight: 500;">${item.id}</span></td>
+            <td>${item.email}</td>
             <td>${item.date}</td>
             <td>${item.address}</td>
             <td>${item.type}</td>
             <td>${item.purpose}</td>
-            <td>${item.payment}</td>
             <td>${getStatusBadge(item.status)}</td>
         </tr>
     `).join('');

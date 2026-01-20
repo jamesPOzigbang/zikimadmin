@@ -30,6 +30,10 @@
                     <span class="icon">⚙️</span>
                     컨텐츠 관리
                 </a>
+                <a href="payment-history.html" class="nav-item">
+                    <span class="icon">💳</span>
+                    이용권 구매내역
+                </a>
                 <a href="refund-management-standalone.html" class="nav-item">
                     <span class="icon">🔄</span>
                     환불 관리
@@ -61,7 +65,8 @@
                 <div class="card table-card">
                     <div class="table-actions">
                         <div class="search-box">
-                            <input type="text" placeholder="리포트 번호">
+                            <input type="text" id="search-report-id" placeholder="리포트 번호">
+                            <input type="text" id="search-email" placeholder="고객 이메일" style="margin-left: 8px;">
                         </div>
                         <div class="date-range-box">
                             <input type="date" class="date-input" aria-label="시작일">
@@ -78,11 +83,11 @@
                             <thead>
                                 <tr>
                                     <th>리포트 번호</th>
+                                    <th>고객 아이디(이메일)</th>
                                     <th>리포트 일시</th>
                                     <th>주소</th>
                                     <th>주용도</th>
                                     <th>리포트 목적</th>
-                                    <th>결제 방식</th>
                                     <th>진행현황</th>
                                 </tr>
                             </thead>

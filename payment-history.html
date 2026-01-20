@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지킴진단 관리자 - 이용권 구매내역</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            /* Colors */
+            --primary-color: #009720;
+            --primary-light: #009720;
+            --accent-color: #009720;
+            --bg-color: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --border-color: #E2E8F0;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        /* Sidebar Styles */
+        .sidebar-link.active {
+            background-color: rgba(0, 151, 32, 0.1);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <img src="logo.png" class="logo-icon" alt="Logo">
+                <span class="logo-text">지킴진단 Admin</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <span class="icon">📄</span>
+                    리포트 발급 이력
+                </a>
+                <a href="content-management-standalone.html" class="nav-item">
+                    <span class="icon">⚙️</span>
+                    컨텐츠 관리
+                </a>
+                <a href="payment-history.html" class="nav-item active">
+                    <span class="icon">💳</span>
+                    이용권 구매내역
+                </a>
+                <a href="refund-management-standalone.html" class="nav-item">
+                    <span class="icon">🔄</span>
+                    환불 관리
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="h-16 border-b bg-white flex items-center justify-between px-8 flex-shrink-0">
+                <div class="text-sm text-gray-500">
+                    <span>홈</span> / <span class="font-medium text-gray-900">이용권 구매내역</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-8 h-8 rounded-full bg-[#009720] flex items-center justify-center text-white text-xs font-bold">
+                        AD
+                    </div>
+                    <span class="text-sm font-medium">관리자</span>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="flex-1 overflow-y-auto bg-gray-50 p-8">
+                <div class="max-w-7xl mx-auto space-y-6">
+                    <div>
+                        <h1 class="text-2xl font-bold mb-1 text-gray-900">이용권 구매내역</h1>
+                        <p class="text-gray-500">고객의 이용권 구매 내역 및 잔여 횟수를 조회합니다.</p>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-sm font-medium text-gray-700">고객 이메일</label>
+                                <input type="text" id="filter-email" placeholder="이메일 입력"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#009720] focus:border-transparent">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-medium text-gray-700">구매기간</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="date" id="filter-date-start"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#009720] focus:border-transparent">
+                                    <span class="text-gray-500">~</span>
+                                    <input type="date" id="filter-date-end"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#009720] focus:border-transparent">
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-medium text-gray-700">구매내역</label>
+                                <select id="filter-item"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#009720] focus:border-transparent">
+                                    <option value="all">전체</option>
+                                    <option value="free">무료 1회원</option>
+                                    <option value="1pass">1회 이용권</option>
+                                    <option value="5pass">5회 이용권</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-medium text-gray-700">결제 상태</label>
+                                <select id="filter-status"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#009720] focus:border-transparent">
+                                    <option value="all">전체</option>
+                                    <option value="completed">완료</option>
+                                    <option value="failed">실패</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th class="px-6 py-3 font-medium text-gray-500">고객 이메일</th>
+                                        <th class="px-6 py-3 font-medium text-gray-500">고객 전화번호</th>
+                                        <th class="px-6 py-3 font-medium text-gray-500">구매일시</th>
+                                        <th class="px-6 py-3 font-medium text-gray-500">구매 내역</th>
+                                        <th class="px-6 py-3 font-medium text-gray-500">잔여 횟수</th>
+                                        <th class="px-6 py-3 font-medium text-gray-500">결제 금액</th>
+                                        <th class="px-6 py-3 font-medium text-gray-500">결제 방법</th>
+                                        <th class="px-6 py-3 font-medium text-gray-500">결제상태</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="payment-table-body" class="divide-y divide-gray-200">
+                                    <!-- Table rows will be inserted here by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <script>
+            // Mock Data
+            let payments = [
+                {
+                    email: "user01@example.com",
+                    phone: "010-1234-5678",
+                    purchaseDate: "2024-01-20 10:30:00",
+                    item: "1pass", // 1회 이용권
+                    itemName: "1회 이용권",
+                    amount: 30000,
+                    method: "신용카드",
+                    remainingObj: { total: 1, used: 0 },
+                    status: "completed"
+                },
+                {
+                    email: "user02@example.com",
+                    phone: "010-9876-5432",
+                    purchaseDate: "2024-01-19 15:45:00",
+                    item: "5pass", // 5회 이용권
+                    itemName: "5회 이용권",
+                    amount: 140000,
+                    method: "카카오페이",
+                    remainingObj: { total: 5, used: 1 },
+                    status: "completed"
+                },
+                {
+                    email: "user03@example.com",
+                    phone: "010-5555-4444",
+                    purchaseDate: "2024-01-18 09:12:00",
+                    item: "free", // 무료 1회원
+                    itemName: "무료 1회원",
+                    amount: 0,
+                    method: "-",
+                    remainingObj: { total: 1, used: 1 },
+                    status: "completed"
+                },
+                {
+                    email: "user04@example.com",
+                    phone: "010-1111-2222",
+                    purchaseDate: "2024-01-20 11:00:00",
+                    item: "1pass",
+                    itemName: "1회 이용권",
+                    amount: 30000,
+                    method: "신용카드",
+                    remainingObj: { total: 1, used: 0 },
+                    status: "failed"
+                },
+                {
+                    email: "james@zikim.com",
+                    phone: "010-7777-8888",
+                    purchaseDate: "2024-01-15 14:20:00",
+                    item: "5pass",
+                    itemName: "5회 이용권",
+                    amount: 140000,
+                    method: "네이버페이",
+                    remainingObj: { total: 5, used: 3 },
+                    status: "completed"
+                }
+            ];
+
+            // Elements
+            const tableBody = document.getElementById('payment-table-body');
+            const filterEmail = document.getElementById('filter-email');
+            const filterDateStart = document.getElementById('filter-date-start');
+            const filterDateEnd = document.getElementById('filter-date-end');
+            const filterItem = document.getElementById('filter-item');
+            const filterStatus = document.getElementById('filter-status');
+
+            // Functions
+            function renderTable() {
+                const fEmail = filterEmail.value.toLowerCase();
+                const fDateStart = filterDateStart.value;
+                const fDateEnd = filterDateEnd.value;
+                const fItem = filterItem.value;
+                const fStatus = filterStatus.value;
+
+                const filtered = payments.filter(p => {
+                    // Email Filter
+                    if (fEmail && !p.email.toLowerCase().includes(fEmail)) return false;
+
+                    // Date Range Filter (Simple string update)
+                    const pDate = p.purchaseDate.split(' ')[0]; // YYYY-MM-DD
+                    if (fDateStart && pDate < fDateStart) return false;
+                    if (fDateEnd && pDate > fDateEnd) return false;
+
+                    // Item Filter
+                    if (fItem !== 'all' && p.item !== fItem) return false;
+
+                    // Status Filter
+                    if (fStatus !== 'all' && p.status !== fStatus) return false;
+
+                    return true;
+                });
+
+                tableBody.innerHTML = '';
+
+                if (filtered.length === 0) {
+                    tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="px-6 py-12 text-center text-gray-500">
+                            검색 결과가 없습니다.
+                        </td>
+                    </tr>
+                `;
+                    return;
+                }
+
+                filtered.forEach(p => {
+                    let badgeClass = '';
+                    let badgeText = '';
+                    if (p.status === 'completed') {
+                        badgeClass = 'bg-green-100 text-green-800';
+                        badgeText = '완료';
+                    } else if (p.status === 'failed') {
+                        badgeClass = 'bg-red-100 text-red-800';
+                        badgeText = '실패';
+                    }
+
+                    const remaining = p.remainingObj.total - p.remainingObj.used;
+                    const remainingText = `${remaining}`;
+
+                    const row = `
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                        <td class="px-6 py-4 font-medium text-gray-900">${p.email}</td>
+                        <td class="px-6 py-4 text-gray-500">${p.phone}</td>
+                        <td class="px-6 py-4 text-gray-500">${p.purchaseDate}</td>
+                        <td class="px-6 py-4"><span class="font-medium">${p.itemName}</span></td>
+                        <td class="px-6 py-4 font-medium text-blue-600">${remainingText}</td>
+                        <td class="px-6 py-4">${p.amount.toLocaleString()}원</td>
+                        <td class="px-6 py-4 text-gray-500">${p.method}</td>
+                        <td class="px-6 py-4"><span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent ${badgeClass}">${badgeText}</span></td>
+                    </tr>
+                `;
+                    tableBody.insertAdjacentHTML('beforeend', row);
+                });
+            }
+
+            // Event Listeners
+            filterEmail.addEventListener('input', renderTable);
+            filterDateStart.addEventListener('input', renderTable);
+            filterDateEnd.addEventListener('input', renderTable);
+            filterItem.addEventListener('change', renderTable);
+            filterStatus.addEventListener('change', renderTable);
+
+            // Initial Render
+            renderTable();
+
+        </script>
+    </div>
+</body>
+
+</html>
