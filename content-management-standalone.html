@@ -1194,11 +1194,21 @@
             font-weight: 500;
         }
 
+        .checkbox-label input[type="checkbox"]:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .checkbox-label:has(input:disabled) {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         /* Card Header Badges */
         .card-badges {
             display: flex;
             gap: 6px;
-            margin-left: 12px;
         }
 
         .badge {
@@ -1251,6 +1261,31 @@
             background-color: #F1F5F9;
             color: #475569;
             border-color: #E2E8F0;
+        }
+
+        .badge.guide {
+            background-color: #EFF6FF;
+            color: #1E40AF;
+            border-color: #DBEAFE;
+        }
+
+        .badge.definition {
+            background-color: #FDF4FF;
+            color: #7C3AED;
+            border-color: #F3E8FF;
+        }
+
+        .badge.special {
+            background-color: #FFF7ED;
+            color: #C2410C;
+            border-color: #FFEDD5;
+        }
+
+        .badge.land-type {
+            background-color: #F0FDF4;
+            color: #15803D;
+            border-color: #BBF7D0;
+            font-weight: 600;
         }
 
         .checklist-label {
@@ -1375,9 +1410,57 @@
                         </div>
                     </div>
                     <div class="filter-row">
+                        <div class="filter-label">컨텐츠 타입</div>
+                        <div class="filter-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="content-type-all" class="filter-all"
+                                    data-target="content-type" checked>
+                                <span>전체</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="content-type" value="안내" checked>
+                                <span>안내</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="content-type" value="설명" checked>
+                                <span>설명</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="content-type" value="특약" checked>
+                                <span>특약</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="filter-row">
                         <div class="filter-label">항목</div>
                         <div class="filter-options" id="category-filters">
                             <!-- JS will populate this -->
+                        </div>
+                    </div>
+                    <div class="filter-row" id="land-type-filter-row">
+                        <div class="filter-label">토지 구분</div>
+                        <div class="filter-options" id="land-type-filters">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="land-type-all" class="filter-all" data-target="land-type"
+                                    checked disabled>
+                                <span>전체</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="land-type" value="구분지상권" checked disabled>
+                                <span>구분지상권</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="land-type" value="근저당권" checked disabled>
+                                <span>근저당권</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="land-type" value="구분지상권+근저당권" checked disabled>
+                                <span>구분지상권+근저당권</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="land-type" value="기타" checked disabled>
+                                <span>기타</span>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -1401,12 +1484,17 @@
         const transactionTypes = ['매매', '전세', '월세'];
         const buildingTypes = ['일반건물', '집합건물'];
         const statusTypes = ['양호', '확인필요', '기타'];
+        const contentTypes = ['안내', '설명', '특약'];
+        const landTypes = ['구분지상권', '근저당권', '구분지상권+근저당권', '기타'];
 
         // Code Mapping for IDs
         const codeMap = {
             '매매': 'sale', '전세': 'jeonse', '월세': 'monthly',
             '일반건물': 'general', '집합건물': 'multi',
-            '양호': 'safe', '확인필요': 'caution', '기타': 'etc'
+            '양호': 'safe', '확인필요': 'caution', '기타': 'etc',
+            '안내': 'guide', '설명': 'definition', '특약': 'special',
+            '구분지상권': 'surface', '근저당권': 'mortgage',
+            '구분지상권+근저당권': 'surface_mortgage', '기타': 'land_etc'
         };
 
         // Initialize Page
@@ -1414,6 +1502,7 @@
             renderCategoryFilters();
             renderAllCards();
             setupFilterListeners();
+            toggleLandTypeFilter(); // 초기 토지 구분 필터 상태 설정
         });
 
         function renderCategoryFilters() {
@@ -1428,7 +1517,7 @@
             checklistItems.forEach((item, index) => {
                 html += `
                     <label class="checkbox-label">
-                        <input type="checkbox" name="category" value="${item}" checked>
+                        <input type="checkbox" name="category" value="${item}" checked onchange="toggleLandTypeFilter()">
                         <span>${item}</span>
                     </label>
                 `;
@@ -1444,7 +1533,20 @@
                 transactionTypes.forEach(tType => {
                     buildingTypes.forEach(bType => {
                         statusTypes.forEach(sType => {
-                            html += createCardHtml(item, itemIdx, tType, bType, sType);
+                            contentTypes.forEach(cType => {
+                                // "기타" 상태에서는 "특약" 카드를 생성하지 않음
+                                if (sType === '기타' && cType === '특약') return;
+
+                                // 토지별도등기 항목인 경우 토지 타입별로 카드 생성
+                                if (item === '토지별도등기') {
+                                    landTypes.forEach(lType => {
+                                        html += createCardHtml(item, itemIdx, tType, bType, sType, cType, lType);
+                                    });
+                                } else {
+                                    // 다른 항목은 토지 타입 없이 카드 생성
+                                    html += createCardHtml(item, itemIdx, tType, bType, sType, cType, null);
+                                }
+                            });
                         });
                     });
                 });
@@ -1453,15 +1555,26 @@
             container.innerHTML = html;
         }
 
-        function createCardHtml(item, itemIdx, tType, bType, sType) {
+        function createCardHtml(item, itemIdx, tType, bType, sType, cType, lType) {
             const tCode = codeMap[tType];
             const bCode = codeMap[bType];
             const sCode = codeMap[sType];
-            const uniqueId = `${itemIdx}-${tCode}-${bCode}-${sCode}`; // Updated uniqueId to include status
+            const cCode = codeMap[cType];
+            const lCode = lType ? codeMap[lType] : 'none';
+            const uniqueId = lType
+                ? `${itemIdx}-${tCode}-${bCode}-${sCode}-${cCode}-${lCode}`
+                : `${itemIdx}-${tCode}-${bCode}-${sCode}-${cCode}`;
 
             // Badge Classes
             const tBadgeClass = tCode;
-            const sBadgeClass = sCode; // safe, caution, etc
+            const sBadgeClass = sCode;
+            const cBadgeClass = cCode;
+
+            // Placeholder text
+            const placeholder = `[${getStatusName(sCode)} - ${cType}] 내용을 입력하세요`;
+
+            // 토지 타입 뱃지 (토지별도등기인 경우에만)
+            const landTypeBadge = lType ? `<span class="badge land-type">${lType}</span>` : '';
 
             return `
                 <div class="checklist-item" 
@@ -1470,25 +1583,43 @@
                      data-transaction="${tType}" 
                      data-building="${bType}"
                      data-status="${sType}"
+                     data-content-type="${cType}"
+                     data-land-type="${lType || ''}"
                      data-last-updated="${new Date().toISOString()}">
                      
                     <div class="checklist-header">
-                        <div style="flex: 1">
-                            <label class="checklist-label">
-                                ${item}
+                        <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+                            <!-- Row 1: 제목 + 컨텐츠 타입 -->
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <span style="font-weight: 600; font-size: 15px;">${item}</span>
+                                <span class="badge ${cBadgeClass}">${cType}</span>
+                            </div>
+                            <!-- Row 2: 나머지 뱃지 + 최종 수정 -->
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
                                 <div class="card-badges">
                                     <span class="badge ${tBadgeClass}">${tType}</span>
                                     <span class="badge building">${bType}</span>
                                     <span class="badge ${sBadgeClass}">${sType}</span>
+                                    ${landTypeBadge}
                                 </div>
-                            </label>
+                                <span class="update-date" id="date-${uniqueId}">최종 수정: ${formatDate(new Date())}</span>
+                            </div>
                         </div>
-                        <span class="update-date" id="date-${uniqueId}" style="flex-shrink: 0">최종 수정: ${formatDate(new Date())}</span>
                     </div>
                     
-                    <!-- Content Area (Directly rendered without tabs) -->
-                    <div id="${uniqueId}-${sCode}" class="status-content-area active">
-                        ${renderRadioGroup(uniqueId, sCode, item)}
+                    <!-- Content Area -->
+                    <div class="content-input-area active">
+                        <div class="input-list" id="list-${uniqueId}">
+                            ${createInputBlock(placeholder)}
+                        </div>
+                        <div class="content-actions">
+                            <button class="btn-add-field" onclick="addInputField('list-${uniqueId}', '${placeholder}')">
+                                + 추가하기
+                            </button>
+                            <button class="btn-save-content" onclick="saveContent('${uniqueId}', '${sCode}', '${cCode}')">
+                                💾 저장하기
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1498,9 +1629,15 @@
             // "All" Checkboxes
             document.querySelectorAll('.filter-all').forEach(allCb => {
                 allCb.addEventListener('change', (e) => {
-                    const targetName = e.target.dataset.target; // transaction, building, category, status
+                    const targetName = e.target.dataset.target;
                     const checkboxes = document.getElementsByName(targetName);
                     checkboxes.forEach(cb => cb.checked = e.target.checked);
+
+                    // 항목 전체 체크박스가 변경되면 토지 구분 필터도 업데이트
+                    if (targetName === 'category') {
+                        toggleLandTypeFilter();
+                    }
+
                     filterCards();
                 });
             });
@@ -1509,7 +1646,6 @@
             const allCheckboxes = document.querySelectorAll('input[type="checkbox"]:not(.filter-all)');
             allCheckboxes.forEach(cb => {
                 cb.addEventListener('change', () => {
-                    // Start checking "All" status
                     const name = cb.name;
                     const allCb = document.querySelector(`.filter-all[data-target="${name}"]`);
                     if (allCb) {
@@ -1522,11 +1658,33 @@
             });
         }
 
+        function toggleLandTypeFilter() {
+            const landTypeCheckbox = document.querySelector('input[name="category"][value="토지별도등기"]');
+            const landTypeFilterInputs = document.querySelectorAll('#land-type-filters input[type="checkbox"]');
+
+            if (landTypeCheckbox && landTypeCheckbox.checked) {
+                // 토지별도등기가 체크되면 토지 구분 필터 활성화 및 전체 선택
+                landTypeFilterInputs.forEach(input => {
+                    input.disabled = false;
+                    input.checked = true;
+                });
+            } else {
+                // 토지별도등기가 해제되면 토지 구분 필터 비활성화 및 전체 해제
+                landTypeFilterInputs.forEach(input => {
+                    input.disabled = true;
+                    input.checked = false;
+                });
+            }
+            filterCards();
+        }
+
         function filterCards() {
             const selectedTransactions = Array.from(document.querySelectorAll('input[name="transaction"]:checked')).map(cb => cb.value);
             const selectedBuildings = Array.from(document.querySelectorAll('input[name="building"]:checked')).map(cb => cb.value);
             const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => cb.value);
             const selectedStatuses = Array.from(document.querySelectorAll('input[name="status"]:checked')).map(cb => cb.value);
+            const selectedContentTypes = Array.from(document.querySelectorAll('input[name="content-type"]:checked')).map(cb => cb.value);
+            const selectedLandTypes = Array.from(document.querySelectorAll('input[name="land-type"]:checked')).map(cb => cb.value);
 
             const cards = document.querySelectorAll('.checklist-item');
 
@@ -1535,104 +1693,26 @@
                 const cBuild = card.dataset.building;
                 const cCat = card.dataset.category;
                 const cStatus = card.dataset.status;
+                const cContentType = card.dataset.contentType;
+                const cLandType = card.dataset.landType;
 
-                const show = selectedTransactions.includes(cTrans) &&
+                // 기본 필터 조건
+                let show = selectedTransactions.includes(cTrans) &&
                     selectedBuildings.includes(cBuild) &&
                     selectedCategories.includes(cCat) &&
-                    selectedStatuses.includes(cStatus);
+                    selectedStatuses.includes(cStatus) &&
+                    selectedContentTypes.includes(cContentType);
+
+                // 토지별도등기 항목인 경우, 토지 타입도 체크
+                if (cCat === '토지별도등기' && cLandType) {
+                    show = show && selectedLandTypes.includes(cLandType);
+                }
 
                 card.style.display = show ? 'block' : 'none';
             });
         }
 
-        // renderRadioGroup function remains largely the same but sCode is passed as status
-        function renderRadioGroup(uniqueId, status, itemName) {
-            const definitionPlaceholder = `[${getStatusName(status)} - 정의] 해당 항목에 대한 정의를 입력하세요`;
-            const guidePlaceholder = `[${getStatusName(status)} - 안내] 사용자에게 안내할 가이드를 입력하세요`;
-            const specialPlaceholder = `[${getStatusName(status)} - 특약] 특약 사항을 입력하세요`;
-
-            // "특약" should be hidden if status is 'etc'
-            const isEtc = status === 'etc';
-            const specialOption = isEtc ? '' : `
-                        <label class="radio-label">
-                            <input type="radio" name="type-${uniqueId}-${status}" value="special" onchange="toggleContentSection('${uniqueId}', '${status}', 'special')">
-                            <span>특약</span>
-                        </label>
-            `;
-            const specialContent = isEtc ? '' : `
-                <div id="${uniqueId}-${status}-special" class="content-input-area">
-                    <div class="input-list" id="list-${uniqueId}-${status}-special">
-                        ${createInputBlock(specialPlaceholder)}
-                    </div>
-                    <div class="content-actions">
-                        <button class="btn-add-field" onclick="addInputField('list-${uniqueId}-${status}-special', '${specialPlaceholder}')">
-                            + 추가하기
-                        </button>
-                        <button class="btn-save-content" onclick="saveContent('${uniqueId}', '${status}', 'special')">
-                            💾 저장하기
-                        </button>
-                    </div>
-                </div>
-            `;
-
-            // 토지별도등기 항목에만 드롭다운 추가
-            const isLandRegistration = itemName === '토지별도등기';
-            const dropdownHtml = isLandRegistration ? `
-                <select class="land-type-dropdown" id="land-type-${uniqueId}-${status}" onchange="updateLandType('${uniqueId}', '${status}')">
-                    <option value="구분지상권">구분지상권</option>
-                    <option value="근저당권">근저당권</option>
-                    <option value="구분상권+근저당권">구분상권+근저당권</option>
-                    <option value="기타">기타</option>
-                </select>
-            ` : '';
-
-            return `
-                <div class="radio-group-wrapper">
-                    <div class="radio-buttons-group">
-                        <label class="radio-label">
-                            <input type="radio" name="type-${uniqueId}-${status}" value="guide" checked onchange="toggleContentSection('${uniqueId}', '${status}', 'guide')">
-                            <span>안내</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="type-${uniqueId}-${status}" value="definition" onchange="toggleContentSection('${uniqueId}', '${status}', 'definition')">
-                            <span>설명</span>
-                        </label>
-                        ${specialOption}
-                    </div>
-                    ${dropdownHtml}
-                </div>
-
-                <div id="${uniqueId}-${status}-definition" class="content-input-area">
-                    <div class="input-list" id="list-${uniqueId}-${status}-definition">
-                        ${createInputBlock(definitionPlaceholder)}
-                    </div>
-                    <div class="content-actions">
-                        <button class="btn-add-field" onclick="addInputField('list-${uniqueId}-${status}-definition', '${definitionPlaceholder}')">
-                            + 추가하기
-                        </button>
-                        <button class="btn-save-content" onclick="saveContent('${uniqueId}', '${status}', 'definition')">
-                            💾 저장하기
-                        </button>
-                    </div>
-                </div>
-                <div id="${uniqueId}-${status}-guide" class="content-input-area active">
-                    <div class="input-list" id="list-${uniqueId}-${status}-guide">
-                        ${createInputBlock(guidePlaceholder)}
-                    </div>
-                    <div class="content-actions">
-                        <button class="btn-add-field" onclick="addInputField('list-${uniqueId}-${status}-guide', '${guidePlaceholder}')">
-                            + 추가하기
-                        </button>
-                        <button class="btn-save-content" onclick="saveContent('${uniqueId}', '${status}', 'guide')">
-                            💾 저장하기
-                        </button>
-                    </div>
-                </div>
-                ${specialContent}
-            `;
-        }
-
-        // Helper functions from previous restoration are below this block
+        // Helper functions
 
         function createInputBlock(placeholder, isRemovable = false) {
             const removeBtn = isRemovable ?
@@ -1661,45 +1741,6 @@
             return '';
         }
 
-        function toggleStatusItem(uniqueId, status) {
-            const itemContainer = document.getElementById(`item-${uniqueId}`);
-
-            // Update tabs
-            const tabs = itemContainer.querySelectorAll('.status-tab');
-            tabs.forEach(tab => {
-                if (tab.classList.contains(status)) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-
-            // Update status content areas
-            const areas = itemContainer.querySelectorAll('.status-content-area');
-            areas.forEach(area => {
-                area.classList.remove('active');
-            });
-            document.getElementById(`${uniqueId}-${status}`).classList.add('active');
-        }
-
-        function toggleContentSection(uniqueId, status, type) {
-            const statusContainer = document.getElementById(`${uniqueId}-${status}`);
-
-            // Update content input areas within this status container
-            const areas = statusContainer.querySelectorAll('.content-input-area');
-            areas.forEach(area => {
-                area.classList.remove('active');
-            });
-            document.getElementById(`${uniqueId}-${status}-${type}`).classList.add('active');
-        }
-
-        function updateLandType(uniqueId, status) {
-            const dropdown = document.getElementById(`land-type-${uniqueId}-${status}`);
-            const selectedType = dropdown.value;
-            console.log(`토지 유형 변경: ${selectedType} (항목: ${uniqueId}, 상태: ${status})`);
-            // 여기에 선택된 유형에 따른 추가 로직을 구현할 수 있습니다
-        }
-
         function formatDate(date) {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -1709,7 +1750,7 @@
             return `${year}.${month}.${day} ${hours}:${minutes}`;
         }
 
-        function saveContent(uniqueId, status, type) {
+        function saveContent(uniqueId, status, contentType) {
             // 현재 시간으로 업데이트
             const now = new Date();
             const itemElement = document.getElementById(`item-${uniqueId}`);
@@ -1720,7 +1761,8 @@
             dateElement.textContent = `최종 수정: ${formatDate(now)}`;
 
             // 저장 성공 메시지
-            alert(`저장되었습니다.\n항목: ${uniqueId}\n상태: ${getStatusName(status)}\n타입: ${type}`);
+            const contentTypeName = contentType === 'guide' ? '안내' : contentType === 'definition' ? '설명' : '특약';
+            alert(`저장되었습니다.\n항목: ${uniqueId}\n상태: ${getStatusName(status)}\n타입: ${contentTypeName}`);
         }
     </script>
     </div>
