@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>지킴진단 관리자 - 이용권 구매내역</title>
+    <title>지킴진단 관리자 - 이용권 현황</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -59,7 +59,7 @@
                 </a>
                 <a href="payment-history.html" class="nav-item active">
                     <span class="icon">💳</span>
-                    이용권 구매내역
+                    이용권 현황
                 </a>
                 <a href="refund-management-standalone.html" class="nav-item">
                     <span class="icon">🔄</span>
@@ -73,7 +73,7 @@
             <!-- Header -->
             <header class="h-16 border-b bg-white flex items-center justify-between px-8 flex-shrink-0">
                 <div class="text-sm text-gray-500">
-                    <span>홈</span> / <span class="font-medium text-gray-900">이용권 구매내역</span>
+                    <span>홈</span> / <span class="font-medium text-gray-900">이용권 현황</span>
                 </div>
                 <div class="flex items-center gap-3">
                     <div
@@ -88,7 +88,7 @@
             <main class="flex-1 overflow-y-auto bg-gray-50 p-8">
                 <div class="max-w-7xl mx-auto space-y-6">
                     <div>
-                        <h1 class="text-2xl font-bold mb-1 text-gray-900">이용권 구매내역</h1>
+                        <h1 class="text-2xl font-bold mb-1 text-gray-900">이용권 현황</h1>
                         <p class="text-gray-500">고객의 이용권 구매 내역 및 잔여 횟수를 조회합니다.</p>
                     </div>
 
@@ -96,9 +96,13 @@
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div class="space-y-2">
-                                <label class="text-sm font-medium text-gray-700">고객 이메일</label>
-                                <input type="text" id="filter-email" placeholder="이메일 입력"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#009720] focus:border-transparent">
+                                <label class="text-sm font-medium text-gray-700">고객 정보</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="text" id="filter-email" placeholder="이메일 검색"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#009720] focus:border-transparent">
+                                    <input type="text" id="filter-phone" placeholder="전화번호 검색"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#009720] focus:border-transparent">
+                                </div>
                             </div>
                             <div class="space-y-2">
                                 <label class="text-sm font-medium text-gray-700">구매기간</label>
@@ -127,10 +131,38 @@
                                     <option value="all">전체</option>
                                     <option value="completed">완료</option>
                                     <option value="failed">실패</option>
+                                    <option value="refund_requested">환불 신청</option>
+                                    <option value="refunded">환불 완료</option>
                                 </select>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Status Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">기간중 유료 구매수</h3>
+                            <p class="text-2xl font-bold text-gray-900" id="stat-paid">0</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">무료 발급수</h3>
+                            <p class="text-2xl font-bold text-gray-900" id="stat-free">0</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">환불 신청수</h3>
+                            <p class="text-2xl font-bold text-orange-600" id="stat-refund-req">0</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">환불 완료수</h3>
+                            <p class="text-2xl font-bold text-gray-500" id="stat-refunded">0</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                            <h3 class="text-sm font-medium text-gray-500 mb-1">실패수</h3>
+                            <p class="text-2xl font-bold text-red-600" id="stat-failed">0</p>
+                        </div>
+                    </div>
+
+
 
                     <!-- Table -->
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -141,11 +173,20 @@
                                         <th class="px-6 py-3 font-medium text-gray-500">고객 이메일</th>
                                         <th class="px-6 py-3 font-medium text-gray-500">고객 전화번호</th>
                                         <th class="px-6 py-3 font-medium text-gray-500">구매일시</th>
-                                        <th class="px-6 py-3 font-medium text-gray-500">구매 내역</th>
-                                        <th class="px-6 py-3 font-medium text-gray-500">잔여 횟수</th>
-                                        <th class="px-6 py-3 font-medium text-gray-500">결제 금액</th>
-                                        <th class="px-6 py-3 font-medium text-gray-500">결제 방법</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            상품명</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            잔여 / 환불</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            결제 / 환불 금액</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            결제수단</th>
                                         <th class="px-6 py-3 font-medium text-gray-500">결제상태</th>
+                                        <th class="px-6 py-3 font-medium text-gray-500">관리</th>
                                     </tr>
                                 </thead>
                                 <tbody id="payment-table-body" class="divide-y divide-gray-200">
@@ -156,6 +197,54 @@
                     </div>
                 </div>
             </main>
+        </div>
+
+
+        <!-- Refund Modal -->
+        <div id="refund-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+                <h3 class="text-lg font-bold mb-4 text-gray-900">환불 처리</h3>
+                <p class="text-sm text-gray-600 mb-4">선택한 결제 건을 환불 처리하시겠습니까?</p>
+
+                <div class="bg-gray-50 p-3 rounded mb-4 text-sm space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">구매자</span>
+                        <span id="modal-email" class="font-medium text-gray-900"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">상품명</span>
+                        <span id="modal-item" class="font-medium text-gray-900"></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-500">환불 횟수</span>
+                        <div class="flex items-center gap-1">
+                            <input type="number" id="modal-count-input"
+                                class="text-right border border-gray-300 rounded px-2 py-1 w-20 font-medium text-gray-900 focus:outline-none focus:border-blue-500">
+                            <span class="text-gray-500 text-xs">회</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-500">환불금액</span>
+                        <input type="number" id="modal-amount-input"
+                            class="text-right border border-gray-300 rounded px-2 py-1 w-40 font-medium text-red-600 focus:outline-none focus:border-red-500">
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">환불 신청자</span>
+                        <span id="modal-requester" class="font-medium text-gray-900">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">환불 신청일시</span>
+                        <span id="modal-request-date" class="font-medium text-gray-900">-</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2">
+                    <button onclick="closeRefundModal()"
+                        class="px-4 py-2 bg-white text-gray-600 border border-gray-300 rounded hover:bg-gray-50">취소</button>
+                    <button onclick="handleRefundAction()"
+                        class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">환불 확정</button>
+                </div>
+            </div>
         </div>
 
         <script>
@@ -214,31 +303,121 @@
                     amount: 140000,
                     method: "네이버페이",
                     remainingObj: { total: 5, used: 3 },
-                    status: "completed"
+                    status: "refund_requested",
+                    refundRequester: "홍길동",
+                    refundRequestDate: "2024-01-27 10:00:00"
+                },
+                {
+                    email: "refunded@example.com",
+                    phone: "010-1111-3333",
+                    purchaseDate: "2024-01-14 11:20:00",
+                    item: "1pass",
+                    itemName: "1회 이용권",
+                    amount: 30000,
+                    method: "신용카드",
+                    remainingObj: { total: 0, used: 0 },
+                    status: "refunded",
+                    refundedCount: 1,
+                    refundRequester: "관리자",
+                    refundRequestDate: "2024-01-15 09:30:00",
+                    refundAmount: 30000,
+                    refundedCount: 1
                 }
             ];
 
             // Elements
             const tableBody = document.getElementById('payment-table-body');
             const filterEmail = document.getElementById('filter-email');
+            const filterPhone = document.getElementById('filter-phone');
             const filterDateStart = document.getElementById('filter-date-start');
             const filterDateEnd = document.getElementById('filter-date-end');
             const filterItem = document.getElementById('filter-item');
             const filterStatus = document.getElementById('filter-status');
 
+            // Status Card Elements
+            const statPaid = document.getElementById('stat-paid');
+            const statFree = document.getElementById('stat-free');
+            const statRefundReq = document.getElementById('stat-refund-req');
+            const statRefunded = document.getElementById('stat-refunded');
+            const statFailed = document.getElementById('stat-failed');
+
+            // Masking Functions
+            function maskEmail(email) {
+                if (!email) return '';
+                const parts = email.split('@');
+                if (parts.length < 2) return email;
+                const id = parts[0];
+                const domain = parts[1];
+                if (id.length <= 2) return id + '@' + domain;
+                return id.substring(0, 2) + '*'.repeat(id.length - 2) + '@' + domain;
+            }
+
+            function maskPhoneNumber(phone) {
+                if (!phone) return '';
+                // Assume 010-XXXX-XXXX format
+                const parts = phone.split('-');
+                if (parts.length === 3) {
+                    return `${parts[0]}-****-${parts[2]}`;
+                }
+                return phone;
+            }
+
             // Functions
+            function updateStatusCards(filteredData) {
+                let paid = 0;
+                let free = 0;
+                let refundReq = 0;
+                let refunded = 0;
+                let failed = 0;
+
+                filteredData.forEach(p => {
+                    // Paid: Status completed AND Amount > 0
+                    if (p.status === 'completed' && p.amount > 0) {
+                        paid++;
+                    }
+                    // Free: Amount is 0 (regardless of status, but usually completed)
+                    // Or strictly Check status? Let's follow plan: Amount == 0
+                    if (p.amount === 0) {
+                        free++;
+                    }
+                    // Refund Request
+                    if (p.status === 'refund_requested') {
+                        refundReq++;
+                    }
+                    // Refund Completed
+                    if (p.status === 'refunded') {
+                        refunded++;
+                    }
+                    // Failed
+                    if (p.status === 'failed') {
+                        failed++;
+                    }
+                });
+
+                statPaid.textContent = paid.toLocaleString();
+                statFree.textContent = free.toLocaleString();
+                statRefundReq.textContent = refundReq.toLocaleString();
+                statRefunded.textContent = refunded.toLocaleString();
+                statFailed.textContent = failed.toLocaleString();
+            }
+
             function renderTable() {
                 const fEmail = filterEmail.value.toLowerCase();
+                const fPhone = filterPhone.value.replace(/-/g, ''); // Search without dashes
                 const fDateStart = filterDateStart.value;
                 const fDateEnd = filterDateEnd.value;
                 const fItem = filterItem.value;
                 const fStatus = filterStatus.value;
 
-                const filtered = payments.filter(p => {
+                // 1. Base Filter (For Status Cards) - Filters EVERYTHING EXCEPT STATUS
+                const baseFiltered = payments.filter(p => {
                     // Email Filter
                     if (fEmail && !p.email.toLowerCase().includes(fEmail)) return false;
 
-                    // Date Range Filter (Simple string update)
+                    // Phone Filter
+                    if (fPhone && !p.phone.replace(/-/g, '').includes(fPhone)) return false;
+
+                    // Date Range Filter
                     const pDate = p.purchaseDate.split(' ')[0]; // YYYY-MM-DD
                     if (fDateStart && pDate < fDateStart) return false;
                     if (fDateEnd && pDate > fDateEnd) return false;
@@ -246,9 +425,15 @@
                     // Item Filter
                     if (fItem !== 'all' && p.item !== fItem) return false;
 
-                    // Status Filter
-                    if (fStatus !== 'all' && p.status !== fStatus) return false;
+                    return true;
+                });
 
+                // Update Status Cards with base filtered data (before status filter)
+                updateStatusCards(baseFiltered);
+
+                // 2. Table Filter - Apply Status Filter on top of base
+                const filtered = baseFiltered.filter(p => {
+                    if (fStatus !== 'all' && p.status !== fStatus) return false;
                     return true;
                 });
 
@@ -257,7 +442,7 @@
                 if (filtered.length === 0) {
                     tableBody.innerHTML = `
                     <tr>
-                        <td colspan="8" class="px-6 py-12 text-center text-gray-500">
+                        <td colspan="9" class="px-6 py-12 text-center text-gray-500">
                             검색 결과가 없습니다.
                         </td>
                     </tr>
@@ -274,29 +459,225 @@
                     } else if (p.status === 'failed') {
                         badgeClass = 'bg-red-100 text-red-800';
                         badgeText = '실패';
+                    } else if (p.status === 'refunded') {
+                        badgeClass = 'bg-gray-100 text-gray-800';
+                        badgeText = '환불 완료';
+                    } else if (p.status === 'refund_requested') {
+                        badgeClass = 'bg-orange-100 text-orange-800';
+                        badgeText = '환불 신청';
                     }
 
                     const remaining = p.remainingObj.total - p.remainingObj.used;
-                    const remainingText = `${remaining}`;
+                    const remainingText = `
+                        <div class="flex flex-col items-center">
+                            <span class="font-medium ${remaining > 0 ? 'text-blue-600' : 'text-gray-500'}">${remaining}회</span>
+                            <span class="text-xs text-gray-400">${p.refundedCount || 0}회</span>
+                        </div>
+                    `;
+
+                    const refundAmtText = p.refundAmount ? p.refundAmount.toLocaleString() + '원' : '-';
+                    const amountText = `
+                        <div class="flex flex-col items-center">
+                            <span class="text-gray-900">${p.amount.toLocaleString()}원</span>
+                            <span class="text-xs text-red-500">${p.refundAmount ? refundAmtText : ''}</span>
+                        </div>
+                    `;
+
+                    let actionBtn = '-';
+                    const idx = payments.indexOf(p);
+
+                    if (p.status === 'completed' && p.amount > 0) {
+                        actionBtn = `<button onclick="requestRefund(${idx})" class="px-3 py-1 text-xs font-medium text-red-600 border border-red-200 rounded hover:bg-red-50">환불 신청</button>`;
+                    } else if (p.status === 'refund_requested') {
+                        actionBtn = `
+                            <div class="flex gap-1 justify-center">
+                                <button onclick="openRefundConfirmModal(${idx})" class="px-2 py-1 text-xs font-medium text-white bg-red-600 rounded hover:bg-red-700">확정</button>
+                                <button onclick="cancelRefundRequest(${idx})" class="px-2 py-1 text-xs font-medium text-gray-600 border border-gray-200 rounded hover:bg-gray-50">취소</button>
+                            </div>
+                        `;
+                    } else if (p.status === 'refunded') {
+                        actionBtn = `<button onclick="openRefundDetailModal(${idx})" class="px-3 py-1 text-xs font-medium text-gray-600 border border-gray-200 rounded hover:bg-gray-50">내역 보기</button>`;
+                    }
 
                     const row = `
                     <tr class="hover:bg-gray-50/50 transition-colors">
-                        <td class="px-6 py-4 font-medium text-gray-900">${p.email}</td>
-                        <td class="px-6 py-4 text-gray-500">${p.phone}</td>
+                        <td class="px-6 py-4 font-medium text-gray-900">${maskEmail(p.email)}</td>
+                        <td class="px-6 py-4 text-gray-500">${maskPhoneNumber(p.phone)}</td>
                         <td class="px-6 py-4 text-gray-500">${p.purchaseDate}</td>
                         <td class="px-6 py-4"><span class="font-medium">${p.itemName}</span></td>
-                        <td class="px-6 py-4 font-medium text-blue-600">${remainingText}</td>
-                        <td class="px-6 py-4">${p.amount.toLocaleString()}원</td>
+                        <td class="px-6 py-4">${remainingText}</td>
+                        <td class="px-6 py-4">${amountText}</td>
                         <td class="px-6 py-4 text-gray-500">${p.method}</td>
                         <td class="px-6 py-4"><span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent ${badgeClass}">${badgeText}</span></td>
+                        <td class="px-6 py-4 text-center">${actionBtn}</td>
                     </tr>
                 `;
                     tableBody.insertAdjacentHTML('beforeend', row);
                 });
             }
 
+            // Refund Logic
+            let currentRefundIndex = -1;
+            let currentModalMode = ''; // 'REQUEST', 'CONFIRM', 'DETAIL'
+            const CURRENT_ADMIN = 'manager_01'; // Mock Admin ID
+
+            const refundModal = document.getElementById('refund-modal');
+            const modalTitle = refundModal.querySelector('h3');
+            const modalDesc = refundModal.querySelector('p');
+            const confirmBtn = refundModal.querySelector('button.bg-red-600');
+            const cancelBtn = refundModal.querySelector('button.bg-white'); // Updated selector for new cancel button class
+
+            // Consolidated Modal Function
+            window.openRefundModal = function (index, mode) {
+                currentRefundIndex = index;
+                currentModalMode = mode;
+                const p = payments[index];
+
+                refundModal.classList.remove('hidden');
+                refundModal.classList.add('flex');
+                confirmBtn.classList.remove('hidden');
+                cancelBtn.innerText = '취소';
+                cancelBtn.onclick = closeRefundModal;
+
+                // Common Data
+                document.getElementById('modal-email').innerText = p.email;
+                document.getElementById('modal-item').innerText = p.itemName;
+
+                // Refund Amount Input handling
+                const amountInput = document.getElementById('modal-amount-input');
+                amountInput.value = p.refundAmount || p.amount; // Use saved refund amount or default to full amount
+                amountInput.disabled = false; // Default to editable
+                amountInput.classList.remove('bg-gray-100', 'text-gray-500'); // Reset styles
+
+                // Refund Count Input handling
+                const countInput = document.getElementById('modal-count-input');
+                const remaining = p.remainingObj.total - p.remainingObj.used;
+                countInput.value = p.refundedCount || remaining; // Use saved refund count or default to remaining
+                countInput.disabled = false;
+                countInput.classList.remove('bg-gray-100', 'text-gray-500');
+
+                // Reset confirm button classes before applying mode-specific ones
+                confirmBtn.classList.remove('bg-orange-500', 'hover:bg-orange-600');
+                confirmBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+
+                // Helper to get formatted Time
+                const getNow = () => {
+                    const now = new Date();
+                    const Y = now.getFullYear();
+                    const M = String(now.getMonth() + 1).padStart(2, '0');
+                    const D = String(now.getDate()).padStart(2, '0');
+                    const h = String(now.getHours()).padStart(2, '0');
+                    const m = String(now.getMinutes()).padStart(2, '0');
+                    const s = String(now.getSeconds()).padStart(2, '0');
+                    return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+                };
+
+                if (mode === 'REQUEST') {
+                    modalTitle.innerText = '환불 신청';
+                    modalDesc.innerText = '해당 결제 건에 대해 환불을 신청하시겠습니까?';
+                    confirmBtn.innerText = '신청 완료';
+                    confirmBtn.classList.replace('bg-red-600', 'bg-orange-500');
+                    confirmBtn.classList.replace('hover:bg-red-700', 'hover:bg-orange-600');
+                    // Show current admin as requester
+                    document.getElementById('modal-requester').innerText = CURRENT_ADMIN;
+                    // Show current time as request date
+                    document.getElementById('modal-request-date').innerText = getNow() + ' (예정)';
+                }
+                else if (mode === 'CONFIRM') {
+                    modalTitle.innerText = '환불 확정';
+                    modalDesc.innerText = '선택한 결제 건의 환불을 최종 확정하시겠습니까? (재무팀 승인 완료)';
+                    confirmBtn.innerText = '환불 확정';
+                    // Classes are already red by default reset, no need to replace
+                    document.getElementById('modal-requester').innerText = p.refundRequester;
+                    document.getElementById('modal-request-date').innerText = p.refundRequestDate || '-';
+                }
+                else if (mode === 'DETAIL') {
+                    modalTitle.innerText = '환불 완료 내역';
+                    modalDesc.innerText = '이미 환불 처리가 완료된 건입니다.';
+                    confirmBtn.classList.add('hidden');
+                    cancelBtn.innerText = '닫기';
+                    document.getElementById('modal-requester').innerText = p.refundRequester || '-';
+                    document.getElementById('modal-request-date').innerText = p.refundRequestDate || '-';
+
+                    // Make input read-only for detail view
+                    // Make input read-only for detail view
+                    amountInput.disabled = true;
+                    amountInput.classList.add('bg-gray-100', 'text-gray-500');
+                    countInput.disabled = true;
+                    countInput.classList.add('bg-gray-100', 'text-gray-500');
+                }
+            }
+
+            window.handleRefundAction = function () {
+                if (currentRefundIndex === -1) return;
+
+                const amountInput = document.getElementById('modal-amount-input');
+                const countInput = document.getElementById('modal-count-input');
+                const refundAmt = parseInt(amountInput.value) || 0;
+                const refundCnt = parseInt(countInput.value) || 0;
+
+                payments[currentRefundIndex].refundAmount = refundAmt;
+                payments[currentRefundIndex].refundedCount = refundCnt; // Save proposed/final refund count
+
+                if (currentModalMode === 'REQUEST') {
+                    const now = new Date();
+                    const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+
+                    payments[currentRefundIndex].status = 'refund_requested';
+                    payments[currentRefundIndex].refundRequester = CURRENT_ADMIN;
+                    payments[currentRefundIndex].refundRequestDate = formattedDate;
+                    alert('환불 신청이 완료되었습니다.');
+                } else if (currentModalMode === 'CONFIRM') {
+                    const p = payments[currentRefundIndex];
+
+                    payments[currentRefundIndex].status = 'refunded';
+                    // Decrease total by refunded count to reflect deduction in remaining
+                    payments[currentRefundIndex].remainingObj.total -= refundCnt;
+
+                    alert('환불 처리가 확정되었습니다.');
+                }
+
+                renderTable();
+                closeRefundModal();
+            }
+
+            window.closeRefundModal = function () {
+                refundModal.classList.add('hidden');
+                refundModal.classList.remove('flex');
+                currentRefundIndex = -1;
+                currentModalMode = ''; // Reset mode
+                // Reset styling just in case
+                confirmBtn.classList.replace('bg-orange-500', 'bg-red-600');
+                confirmBtn.classList.replace('hover:bg-orange-600', 'hover:bg-red-700');
+            }
+
+            // Wrapper functions to match onclicks
+            window.requestRefund = function (index) {
+                openRefundModal(index, 'REQUEST');
+            }
+
+            window.openRefundConfirmModal = function (index) {
+                openRefundModal(index, 'CONFIRM');
+            }
+
+            window.openRefundDetailModal = function (index) {
+                openRefundModal(index, 'DETAIL');
+            }
+
+            // 2. Cancel Refund Request (No change needed, keeps simple confirm)
+            window.cancelRefundRequest = function (index) {
+                if (confirm('환불 신청을 취소하고 결제 완료 상태로 되돌리시겠습니까?')) {
+                    payments[index].status = 'completed';
+                    delete payments[index].refundRequester; // Clear requester
+                    delete payments[index].refundAmount; // Clear refund amount
+                    delete payments[index].refundRequestDate; // Clear request date
+                    renderTable();
+                }
+            }
+
             // Event Listeners
             filterEmail.addEventListener('input', renderTable);
+            filterPhone.addEventListener('input', renderTable);
             filterDateStart.addEventListener('input', renderTable);
             filterDateEnd.addEventListener('input', renderTable);
             filterItem.addEventListener('change', renderTable);
