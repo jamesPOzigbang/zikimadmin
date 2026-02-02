@@ -71,18 +71,52 @@ function setupFilters() {
 function renderTable(data) {
     if (!tableBody) return;
 
-    tableBody.innerHTML = data.map(item => `
+    tableBody.innerHTML = data.map(item => {
+        const cancelDateHtml = item.cancelDate ? `<br><span style="color: var(--danger-color); font-size: 12px;">(취소: ${item.cancelDate})</span>` : '';
+        const actionHtml = item.status !== '취소'
+            ? `<button class="btn btn-outline" style="color: var(--danger-color); border-color: var(--danger-color); padding: 4px 12px; font-size: 12px;" onclick="cancelReport(event, '${item.id}')">취소</button>`
+            : '<span style="color: var(--text-muted); font-size: 12px;">취소됨</span>';
+
+        return `
         <tr onclick="openReportDetail('${item.id}')">
             <td><span style="font-family: monospace; font-weight: 500;">${item.id}</span></td>
             <td>${item.email}</td>
-            <td>${item.date}</td>
+            <td>${item.date}${cancelDateHtml}</td>
             <td>${item.address}</td>
             <td>${item.type}</td>
             <td>${item.purpose}</td>
             <td>${getStatusBadge(item.status)}</td>
+            <td onclick="event.stopPropagation()">${actionHtml}</td>
         </tr>
-    `).join('');
+    `}).join('');
 }
+
+// Cancel Report Function
+window.cancelReport = (event, id) => {
+    event.stopPropagation(); // Prevent row click
+
+    if (confirm('정말 이 리포트를 취소하시겠습니까?\n취소된 리포트는 복구할 수 없습니다.')) {
+        const report = reportData.find(item => item.id === id);
+        if (report) {
+            report.status = '취소';
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            report.cancelDate = `${year}-${month}-${day} ${hours}:${minutes}`;
+
+            // Re-render table by triggering filter update to maintain current view state
+            const searchInput = document.getElementById('search-report-id');
+            if (searchInput) {
+                searchInput.dispatchEvent(new Event('input'));
+            } else {
+                renderTable(reportData);
+            }
+        }
+    }
+};
 
 // Navigation Function
 window.openReportDetail = (id) => {
