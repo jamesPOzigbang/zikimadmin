@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { FileText, Settings, RotateCcw } from "lucide-react"
+import { FileText, Settings } from "lucide-react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 
@@ -16,11 +16,6 @@ const navItems = [
     title: "컨텐츠 관리",
     href: "/content-management",
     icon: Settings,
-  },
-  {
-    title: "환불 관리",
-    href: "/refund-management",
-    icon: RotateCcw,
   },
 ]
 
