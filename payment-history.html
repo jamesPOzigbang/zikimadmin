@@ -84,9 +84,21 @@
             <!-- Page Content -->
             <main class="flex-1 overflow-y-auto bg-gray-50 p-8">
                 <div class="max-w-7xl mx-auto space-y-6">
-                    <div>
-                        <h1 class="text-2xl font-bold mb-1 text-gray-900">이용권 현황</h1>
-                        <p class="text-gray-500">고객의 이용권 구매 내역 및 잔여 횟수를 조회합니다.</p>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h1 class="text-2xl font-bold mb-1 text-gray-900">이용권 현황</h1>
+                            <p class="text-gray-500">고객의 이용권 구매 내역 및 잔여 횟수를 조회합니다.</p>
+                        </div>
+                        <button onclick="openAddPassModal()"
+                            class="px-4 py-2 bg-[#009720] text-white rounded-lg font-medium hover:bg-[#007a18] transition-colors flex items-center gap-2 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            이용권 추가
+                        </button>
                     </div>
 
                     <!-- Filters -->
@@ -241,6 +253,83 @@
                     <button onclick="handleRefundAction()"
                         class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">환불 확정</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Add Pass Modal -->
+        <div id="add-pass-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-6 w-[500px] shadow-xl max-h-[85vh] overflow-hidden flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">무료 이용권 추가</h3>
+                        <p class="text-sm text-gray-500">고객을 검색하여 무료 1회권을 추가합니다</p>
+                    </div>
+                    <button onclick="closeAddPassModal()"
+                        class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Search Section with Dropdown -->
+                <div class="relative mb-4">
+                    <div class="relative">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" viewBox="0 0 20 20"
+                            fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <input type="text" id="add-pass-search" placeholder="이메일 또는 전화번호 입력..."
+                            class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#009720] focus:border-transparent"
+                            oninput="searchCustomerForPass()" onfocus="showDropdown()" autocomplete="off">
+                    </div>
+                    <!-- Dropdown Results -->
+                    <div id="add-pass-dropdown"
+                        class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-[200px] overflow-y-auto z-10 hidden">
+                    </div>
+                </div>
+
+                <!-- Selected Customers List -->
+                <div id="selected-customers-container" class="mb-4 hidden">
+                    <div class="flex justify-between items-end mb-2">
+                        <h4 class="text-sm font-bold text-gray-700">선택된 고객 <span id="selected-count"
+                                class="text-[#009720]">0</span>명</h4>
+                        <button onclick="clearAllSelected()"
+                            class="text-xs text-gray-500 hover:text-gray-700 underline">전체 해제</button>
+                    </div>
+                    <div id="selected-customers-list"
+                        class="space-y-2 max-h-[150px] overflow-y-auto border border-gray-200 rounded-lg p-2 bg-gray-50">
+                        <!-- Selected items will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Add Button -->
+                <button id="add-pass-confirm-btn" onclick="confirmAddPass()" disabled
+                    class="w-full py-2.5 bg-[#009720] text-white rounded-lg hover:bg-[#007a18] disabled:bg-gray-300 disabled:cursor-not-allowed text-sm font-medium transition-colors mb-4">
+                    선택한 고객에게 무료 1회권 일괄 추가
+                </button>
+
+                <!-- Added History -->
+                <div id="add-pass-history" class="flex-1 overflow-y-auto hidden">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xs font-medium text-gray-500">추가된 이용권</span>
+                        <span id="add-pass-count"
+                            class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">0건</span>
+                    </div>
+                    <div id="add-pass-history-list" class="space-y-2 max-h-[150px] overflow-y-auto">
+                    </div>
+                </div>
+
+                <!-- Close Button -->
+                <button onclick="closeAddPassModal()"
+                    class="w-full py-2 text-gray-500 hover:text-gray-700 text-sm font-medium mt-2">
+                    닫기
+                </button>
             </div>
         </div>
 
@@ -682,6 +771,294 @@
 
             // Initial Render
             renderTable();
+
+            // ========== Add Pass Modal Functions ==========
+            let selectedCustomersSet = new Set();
+            let addedPassHistory = [];
+            const addPassModal = document.getElementById('add-pass-modal');
+            const addPassDropdown = document.getElementById('add-pass-dropdown');
+            const selectedCustomersContainer = document.getElementById('selected-customers-container');
+            const selectedCustomersList = document.getElementById('selected-customers-list');
+            const selectedCountSpan = document.getElementById('selected-count');
+            const addPassConfirmBtn = document.getElementById('add-pass-confirm-btn');
+            const addPassHistory = document.getElementById('add-pass-history');
+            const addPassHistoryList = document.getElementById('add-pass-history-list');
+            const addPassCount = document.getElementById('add-pass-count');
+
+            window.openAddPassModal = function () {
+                addPassModal.classList.remove('hidden');
+                addPassModal.classList.add('flex');
+                document.getElementById('add-pass-search').value = '';
+                addPassDropdown.innerHTML = '';
+                addPassDropdown.classList.add('hidden');
+
+                // Clear selection
+                selectedCustomersSet.clear();
+                updateSelectedCustomersUI();
+
+                addedPassHistory = [];
+                addPassHistory.classList.add('hidden');
+                addPassHistoryList.innerHTML = '';
+                addPassCount.textContent = '0건';
+                setTimeout(() => document.getElementById('add-pass-search').focus(), 100);
+            }
+
+            window.closeAddPassModal = function () {
+                addPassModal.classList.add('hidden');
+                addPassModal.classList.remove('flex');
+                selectedCustomersSet.clear();
+            }
+
+            window.showDropdown = function () {
+                const query = document.getElementById('add-pass-search').value.trim();
+                if (query.length >= 2) {
+                    addPassDropdown.classList.remove('hidden');
+                }
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (e) {
+                const searchInput = document.getElementById('add-pass-search');
+                if (searchInput && !searchInput.contains(e.target) && !addPassDropdown.contains(e.target)) {
+                    addPassDropdown.classList.add('hidden');
+                }
+            });
+
+            // Debounce for auto-complete
+            let searchTimeout = null;
+
+            window.searchCustomerForPass = function () {
+                const query = document.getElementById('add-pass-search').value.trim().toLowerCase();
+
+                // Clear previous timeout
+                if (searchTimeout) {
+                    clearTimeout(searchTimeout);
+                }
+
+                if (!query || query.length < 2) {
+                    addPassDropdown.innerHTML = '';
+                    addPassDropdown.classList.add('hidden');
+                    return;
+                }
+
+                // Show loading indicator and debounce
+                searchTimeout = setTimeout(() => {
+                    performSearch(query);
+                }, 100);
+            }
+
+            function performSearch(query) {
+                // Search in payments data
+                const results = payments.filter(p =>
+                    p.email.toLowerCase().includes(query) ||
+                    p.phone.replace(/-/g, '').includes(query.replace(/-/g, ''))
+                );
+
+                // Get unique customers by email
+                const uniqueCustomers = [];
+                const seenEmails = new Set();
+                results.forEach(p => {
+                    if (!seenEmails.has(p.email)) {
+                        seenEmails.add(p.email);
+                        uniqueCustomers.push({ email: p.email, phone: p.phone, originalIndex: payments.indexOf(p) });
+                    }
+                });
+
+                if (uniqueCustomers.length === 0) {
+                    addPassDropdown.innerHTML = `
+                        <div class="p-3 text-center">
+                            <p class="text-sm text-gray-500">검색 결과가 없습니다</p>
+                            <button onclick="addNewCustomer('${query}')" 
+                                class="mt-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-md text-xs hover:bg-blue-100 transition-colors">
+                                + "신규 고객"으로 추가
+                            </button>
+                        </div>
+                    `;
+                    addPassDropdown.classList.remove('hidden');
+                    return;
+                }
+
+                let html = '';
+                uniqueCustomers.slice(0, 5).forEach((customer, idx) => {
+                    html += `
+                        <div class="px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-0" 
+                             onclick="selectCustomerForPass(${customer.originalIndex})">
+                            <p class="text-sm font-medium text-gray-900">${customer.email}</p>
+                            <p class="text-xs text-gray-500">${customer.phone}</p>
+                        </div>
+                    `;
+                });
+                if (uniqueCustomers.length > 5) {
+                    html += `<div class="px-3 py-2 text-xs text-gray-400 text-center">외 ${uniqueCustomers.length - 5}명 더...</div>`;
+                }
+                addPassDropdown.innerHTML = html;
+                addPassDropdown.classList.remove('hidden');
+            }
+
+            window.clearAllSelected = function () {
+                selectedCustomersSet.clear();
+                updateSelectedCustomersUI();
+                document.getElementById('add-pass-search').focus();
+            }
+
+            window.removeSelectedCustomer = function (index) {
+                selectedCustomersSet.delete(index);
+                updateSelectedCustomersUI();
+            }
+
+            window.updateSelectedCustomersUI = function () {
+                const count = selectedCustomersSet.size;
+                selectedCountSpan.textContent = count;
+                addPassConfirmBtn.textContent = count > 0 ? `${count}명에게 무료 1회권 일괄 추가` : '고객을 선택해주세요';
+                addPassConfirmBtn.disabled = count === 0;
+
+                if (count === 0) {
+                    selectedCustomersContainer.classList.add('hidden');
+                    return;
+                }
+
+                selectedCustomersContainer.classList.remove('hidden');
+                selectedCustomersList.innerHTML = Array.from(selectedCustomersSet).map(index => {
+                    const customer = payments[index];
+                    return `
+                        <div class="flex items-center justify-between bg-white p-2 rounded border border-gray-100 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
+                                    <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">${customer.email}</span>
+                                    <span class="text-xs text-gray-500 ml-1">${customer.phone}</span>
+                                </div>
+                            </div>
+                            <button onclick="removeSelectedCustomer(${index})" class="text-gray-400 hover:text-red-500 p-1 rounded-full hover:bg-red-50">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            window.selectCustomerForPass = function (index) {
+                if (selectedCustomersSet.has(index)) {
+                    // Already selected, give visual feedback or just clear search
+                    document.getElementById('add-pass-search').value = '';
+                    addPassDropdown.classList.add('hidden');
+                    document.getElementById('add-pass-search').focus();
+                    return;
+                }
+
+                selectedCustomersSet.add(index);
+                updateSelectedCustomersUI();
+
+                // Clear search input and keep focus for next selection
+                document.getElementById('add-pass-search').value = '';
+                addPassDropdown.classList.add('hidden');
+                document.getElementById('add-pass-search').focus();
+            }
+
+            window.addNewCustomer = function (query) {
+                // Determine if query looks like email or phone
+                const isEmail = query.includes('@');
+                const newCustomer = {
+                    email: isEmail ? query : '',
+                    phone: isEmail ? '' : query,
+                    purchaseDate: new Date().toISOString().slice(0, 19).replace('T', ' '),
+                    item: 'free',
+                    itemName: '무료 1회원',
+                    amount: 0,
+                    method: '관리자 지급',
+                    remainingObj: { total: 1, used: 0 },
+                    status: 'completed'
+                };
+
+                if (!isEmail) {
+                    // Format phone number
+                    const digits = query.replace(/\D/g, '');
+                    if (digits.length === 11) {
+                        newCustomer.phone = digits.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+                    } else {
+                        newCustomer.phone = query;
+                    }
+                }
+
+                // If missing email or phone, prompt
+                if (!newCustomer.email) {
+                    newCustomer.email = prompt('고객 이메일을 입력해주세요:') || 'unknown@example.com';
+                }
+                if (!newCustomer.phone) {
+                    newCustomer.phone = prompt('고객 전화번호를 입력해주세요:') || '000-0000-0000';
+                }
+
+                payments.unshift(newCustomer);
+
+                // Add the newly created customer to the selection automatically
+                const newIndex = 0; // It's unshifted to top
+                selectedCustomersSet.add(newIndex);
+                updateSelectedCustomersUI();
+
+                document.getElementById('add-pass-search').value = '';
+                addPassDropdown.classList.add('hidden');
+                document.getElementById('add-pass-search').focus();
+            }
+
+            window.confirmAddPass = function () {
+                if (selectedCustomersSet.size === 0) return;
+
+                const indices = Array.from(selectedCustomersSet);
+                const now = new Date();
+                const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+
+                indices.forEach(index => {
+                    const customer = payments[index];
+                    // Add new free pass entry
+                    const newPass = {
+                        email: customer.email,
+                        phone: customer.phone,
+                        purchaseDate: formattedDate,
+                        item: 'free',
+                        itemName: '무료 1회원',
+                        amount: 0,
+                        method: '관리자 지급',
+                        remainingObj: { total: 1, used: 0 },
+                        status: 'completed'
+                    };
+                    payments.unshift(newPass);
+                    addToHistory(customer.email);
+                });
+
+                renderTable();
+
+                // Clear selection and close modal
+                selectedCustomersSet.clear();
+                updateSelectedCustomersUI();
+                closeAddPassModal();
+            }
+
+            function addToHistory(email) {
+                addedPassHistory.push({ email, time });
+
+                // Update history display
+                addPassHistory.classList.remove('hidden');
+                addPassCount.textContent = `${addedPassHistory.length}건`;
+
+                const historyItem = document.createElement('div');
+                historyItem.className = 'flex items-center justify-between bg-white border border-gray-200 rounded-lg px-3 py-2';
+                historyItem.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-sm text-gray-700">${email}</span>
+                    </div>
+                    <span class="text-xs text-gray-400">${time}</span>
+                `;
+                addPassHistoryList.insertBefore(historyItem, addPassHistoryList.firstChild);
+            }
 
         </script>
     </div>
